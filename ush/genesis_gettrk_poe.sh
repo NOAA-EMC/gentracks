@@ -2006,7 +2006,7 @@ if [ ${model} -eq 4 ] ; then
       let fhr=ict*6
       echo "fhr= $fhr  fhour= $fhour"
       fmmddhh=` ${NDATE} ${fhour} ${PDY}${CYL} | cut -c5- `
-      ec_hires_orig=DCD${immddhh}00${fmmddhh}001
+      ec_hires_orig=DCD${immddhh}00${fmmddhh}00${ECMWF_FILE_EXT:-1}
 #      ec_hires_orig=ecens_DCD${immddhh}00${fmmddhh}001
 
       total_file_cnt=$(($total_file_cnt+1))

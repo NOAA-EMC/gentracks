@@ -373,6 +373,19 @@ if [ ${SENDCOM} = 'YES' ]; then
 
 fi
 
+if [ ${SENDCOM} = 'YES' ]; then
+  if [ $regtype = "glbl" ] ; then
+    if [ ${bmodel} = 'gefs' -o ${bmodel} = 'eens' -o ${bmodel} = 'cens' ]; then
+      for pert in ${pertstring}
+      do 
+        if [ $SENDDBN = "YES" ] ; then
+          $DBNROOT/bin/dbn_alert MODEL GENTRACK_XTROP $job ${COMOUT}/trak.${aa}${pert}.atcf_gen.${regtype}.${PDY}${CYL}
+        fi
+      done                           
+    fi 
+  fi
+fi
+
 if [ ${cmodel} = 'gefs' -o ${cmodel} = 'gfs' -o ${cmodel} = 'cens' ]; then
 cd ${DATA}
 perl $USHtrkr/atcf2xml.prod.pl --date ${PDY}${CYL} --model ${cmodel} --basin ${regtype}
