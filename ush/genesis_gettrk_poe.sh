@@ -140,11 +140,13 @@ wgrib_ec_phase_parmlist=" GH:900|GH:850|GH:800|GH:750|GH:700|GH:650|GH:600|GH:55
          echo " "                                         ;
          set -x                                           ;
          ukmetdir=${COMIN}                                ;
-         ukmetgfile=ukm.${PDY}${CYL}                      ;
+	 ukmetgfile=${cmodel}.t${cyc}z.0p25.f               ;
+#         ukmetgfile=ukm.${PDY}${CYL}                      ;
          ukmetifile=                                      ;
          fcstlen=144                                      ;
-         fcsthrs=' 00 06 12 18 24  30  36  42  48  54  60  66
-                   72 78 84 90 96  102 108 114 120 126 132 138 144
+#	 fcsthrs=' 000 006 012 018'                      ;
+         fcsthrs=' 000 006 012 018 024 030 036 042 048 054 060 066
+                   072 078 084 090 096 102 108 114 120 126 132 138 144
                    99 99 99 99 99 99 99 99 99 99 99 99 99
                    99 99 99 99 99 99 99 99 99 99 99 99 99
                    99 99 99 99 99 99 99 99 99 99 99 99 99 99' ;
@@ -156,6 +158,7 @@ wgrib_ec_phase_parmlist=" GH:900|GH:850|GH:800|GH:750|GH:700|GH:650|GH:600|GH:55
          mslpthresh=0.0015                                ;
          v850thresh=1.5000                                ;
          modtyp='global'                                  ;
+	 PHASEFLAG=n                                      ;
          g2_jpdtn=0                                       ;
          model=3                                         ;;
 
@@ -1883,19 +1886,20 @@ then
       for fhour in ${fcsthrs}
       do
 
-         if [ ${fhour} -eq 99 ]; then
-            continue
-         fi
+        if [ ${fhour} -eq 99 ]; then
+           continue
+        fi
 
-         total_file_cnt=$(($total_file_cnt+1))
-    if [ ${gribver} -eq 1 ]; then
-      gfile=${ukmetdir}/pgbf${fhour}.${ukmetgfile}
+        total_file_cnt=$(($total_file_cnt+1))
+        if [ ${gribver} -eq 1 ]; then
+          gfile=${ukmetdir}/${ukmetgfile}${fhour}.grib
+#      gfile=${ukmetdir}/pgbf${fhour}.${ukmetgfile}
 
-         if [ ! -s ${ukmetdir}/pgbf${fhour}.${ukmetgfile} ]; then
+          if [ ! -s ${ukmetdir}/${ukmetgfile}${fhour}.grib ]; then
             set +x
             echo " "
             echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            echo " !!! UKMET File missing: ${ukmetdir}/${ukmetgfile}${fhour}"
+            echo " !!! UKMET File missing: ${ukmetdir}/${ukmetgfile}${fhour}.grib"
             echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             echo " "
             echo " !!! Please re-run the job when UKMET file is available ..... "
@@ -1903,67 +1907,67 @@ then
             missing_file_cnt=$(($missing_file_cnt+1))
             set -x
             err_exit " FAILED ${jobid} - MISSING UKMET FILE IN TRACKER SCRIPT - ABNORMAL EXIT"
-#            continue
-         fi
-      $WGRIB -s $gfile >ukmet.ix
+#           continue
+          fi
+          $WGRIB -s $gfile >ukmet.ix
 
-         for parm in ${wgrib_parmlist}
-         do
+          for parm in ${wgrib_parmlist}
+          do
 
-          case ${parm} in
-            "SurfaceU")
-              grep "UGRD:sfc" ukmet.ix | \
-                $WGRIB -s $gfile -i -grib -append \
+            case ${parm} in
+              "SurfaceU")
+               grep "UGRD:10 m above" ukmet.ix | \
+                  $WGRIB -s $gfile -i -grib -append \
                              -o ${PERTDATA}/ukmetgribfile.${PDY}${CYL} ;;
-            "SurfaceV")
-              grep "VGRD:sfc" ukmet.ix | \
-                $WGRIB -s $gfile -i -grib -append \
+              "SurfaceV")
+               grep "VGRD:10 m above" ukmet.ix | \
+                  $WGRIB -s $gfile -i -grib -append \
                              -o ${PERTDATA}/ukmetgribfile.${PDY}${CYL} ;;
-            *)
-            grep "${parm}" ukmet.ix | $WGRIB -s $gfile -i -grib -append \
+                  *)
+               grep "${parm}" ukmet.ix | $WGRIB -s $gfile -i -grib -append \
                              -o ${PERTDATA}/ukmetgribfile.${PDY}${CYL} ;;
             esac
-         done
+          done
 
-         if [ ${PHASEFLAG} = 'y' ]; then
-           egrep "${wgrib_phase_parmlist}" ukmet.ix | grep mb | \
+          if [ ${PHASEFLAG} = 'y' ]; then
+            egrep "${wgrib_phase_parmlist}" ukmet.ix | grep mb | \
                                      $WGRIB -s $gfile -i -grib -append \
                                   -o ${PERTDATA}/ukmetgribfile.${PDY}${CYL}
-         fi
-    else  ## gribver = 2
-      gfile=${ukmetdir}/${ukmetgfile}${fhour}.grib2
-         if [ ! -s $gfile ]; then
-            set +x
-            echo " "
-            echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            echo " !!! UKMET File missing: $gfile                         "
-            echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-            echo " "
-            echo " !!! Please re-run the job when UKMET file is available ..... "
-            echo " "
-            missing_file_cnt=$(($missing_file_cnt+1))
-            set -x
-            err_exit " FAILED ${jobid} - MISSING UKMET FILE IN TRACKER SCRIPT - ABNORMAL EXIT"
-         fi
-      $WGRIB2 -s $gfile >ukmet.ix
+           fi
+        else  ## gribver = 2
+          gfile=${ukmetdir}/${ukmetgfile}${fhour}.grib2
+            if [ ! -s $gfile ]; then
+              set +x
+              echo " "
+              echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              echo " !!! UKMET File missing: $gfile                         "
+              echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+              echo " "
+              echo " !!! Please re-run the job when UKMET file is available ..... "
+              echo " "
+              missing_file_cnt=$(($missing_file_cnt+1))
+              set -x
+              err_exit " FAILED ${jobid} - MISSING UKMET FILE IN TRACKER SCRIPT - ABNORMAL EXIT"
+            fi
+            $WGRIB2 -s $gfile >ukmet.ix
 
-         for parm in ${wgrib_parmlist}
-         do
-          case ${parm} in
-            "SurfaceU")
-              grep "UGRD:sfc" ukmet.ix | \
-                $WGRIB2 -i $gfile -append -grib \
+            for parm in ${wgrib_parmlist}
+            do
+              case ${parm} in
+               "SurfaceU")
+                grep "UGRD:sfc" ukmet.ix | \
+                   $WGRIB2 -i $gfile -append -grib \
                              -o ${PERTDATA}/ukmetgribfile.${PDY}${CYL} ;;
-            "SurfaceV")
-              grep "VGRD:sfc" ukmet.ix | \
-                $WGRIB2 -i $gfile -append -grib \
+               "SurfaceV")
+                grep "VGRD:sfc" ukmet.ix | \
+                  $WGRIB2 -i $gfile -append -grib \
                              -o ${PERTDATA}/ukmetgribfile.${PDY}${CYL} ;;
-            *)
-            grep "${parm}" ukmet.ix | $WGRIB2 -i $gfile -append -grib \
+                  *)
+                grep "${parm}" ukmet.ix | $WGRIB2 -i $gfile -append -grib \
                               ${PERTDATA}/ukmetgribfile.${PDY}${CYL}
-           esac
-         done
-     fi ## gribver ends
+              esac
+            done
+        fi ## gribver ends
 
       done
 
@@ -1972,8 +1976,16 @@ then
      else
       $GRB2INDEX ${PERTDATA}/ukmetgribfile.${PDY}${CYL} ${PERTDATA}/ukmetixfile.${PDY}${CYL}
     fi
-      gribfile=${PERTDATA}/ukmetgribfile.${PDY}${CYL}
-      ixfile=${PERTDATA}/ukmetixfile.${PDY}${CYL}
+
+    grid="255 0 360 181 -90000 0000 128 90000 359000 1000 1000 64"
+    export gfile=ukmetgribfile.1x1degree
+    $COPYGB -g"${grid}" -a ${PERTDATA}/ukmetgribfile.${PDY}${cyc} ${PERTDATA}/ukmetixfile.${PDY}${cyc} ${gfile}
+    cp ${gfile} ${PERTDATA}/ukmetgribfile.${PDY}${cyc}
+    ${GRBINDEX:?} ${PERTDATA}/ukmetgribfile.${PDY}${cyc} ${PERTDATA}/ukmetixfile.${PDY}${cyc}
+    export err=$?; err_chk
+
+    gribfile=${PERTDATA}/ukmetgribfile.${PDY}${CYL}
+    ixfile=${PERTDATA}/ukmetixfile.${PDY}${CYL}
 
    fi
 
@@ -3229,9 +3241,8 @@ write_vit=y
   cat ${PERTDATA}/trak.${atcfout}.atcf_gen.${regtype}.${PDY}${CYL}  >>  ${savedir}/trak.${atcfout}.atcf_gen.${regtype}.${syyyy}
 
    if [ $missing_file_cnt -gt 0 ]; then
-      #echo "missing data" ${atcfout} ${PDY}${CYL} | mail -s "tracker status" guang.ping.lou@noaa.gov
-      echo "missing data" ${atcfout} ${PDY}${CYL} | mail -s "tracker status" nco.spa@noaa.gov
-      echo " WARNING: Missing data $missing_file_cnt files out of $total_file_cnt files total !!!!" 
+     echo "missing data" ${atcfout} ${PDY}${CYL} | mail -s "tracker status" nco.spa@noaa.gov
+     echo " WARNING: Missing data $missing_file_cnt files out of $total_file_cnt files total !!!!" 
 #   else
 #      
 #      echo "No missing file out of $total_file_cnt files total !!!" 
