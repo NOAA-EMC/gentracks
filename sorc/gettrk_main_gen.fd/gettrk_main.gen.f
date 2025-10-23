@@ -8753,7 +8753,8 @@ c
       type (datecard) inp
       type (gribfield) :: gfld
 c
-      integer, parameter :: jf=750000
+c      integer, parameter :: jf=750000
+      integer, parameter :: jf=40000000
       integer, parameter :: nparms=13
       real, allocatable :: f(:)
       real :: dmin,dmax,firstval,lastval
@@ -8896,10 +8897,10 @@ c       so-called membrane MSLP, which has a GRIB2 param num of 192.
           iglev(12)    = 10
           iglev(13)    = 10
         else if (inp%model == 3) then    ! UKMET: "surface" winds
-          iglevtyp(12) = 1
-          iglevtyp(13) = 1
-          iglev(12)    = 0
-          iglev(13)    = 0 
+          iglevtyp(12) = 105
+          iglevtyp(13) = 105
+          iglev(12)    = 10
+          iglev(13)    = 10 
         else if (inp%model == 4) then    ! ECMWF hi-res: "surface" winds
           ec_iglevtyp(12) = 1
           ec_iglevtyp(13) = 1
@@ -10533,7 +10534,8 @@ c
       logical :: unpack=.true.
       logical :: open_grb=.false.
       integer,dimension(200) :: jids,jpdt,jgdt
-      integer, parameter :: jf=750000
+c      integer, parameter :: jf=750000
+      integer, parameter :: jf=40000000
       CHARACTER(len=8) :: pabbrev
       integer   pdt_4p0_vert_level,pdt_4p0_vtime
       real      xhold,xlondiff,xlatdiff,temp,firstval,lastval
