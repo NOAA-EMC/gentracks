@@ -109,7 +109,7 @@ set -x
 
 ########################################
 msg="has begun for ${cmodel} at ${cyc}z"
-postmsg "$jlogfile" "$msg"
+#postmsg "$jlogfile" "$msg"
 ########################################
 
 # This script runs the hurricane tracker using operational GRIB model output.  
@@ -123,8 +123,8 @@ postmsg "$jlogfile" "$msg"
 #  PDY      -- The date for data being processed, in YYYYMMDD format
 #  CYL      -- The numbers for the cycle for data being processed (00, 06, 09, 
 #              12, 18, 21)
-#  cmodel   -- Model being processed (gfs, ukmet, ecmwf, nam, nvgm, gdas, gfdl, 
-#              gefs (ncep GFS ensemble), sref (nam ensemble), cens (canadian 
+#  cmodel   -- Model being processed (gfs, ukmet, ecmwf, rrfs, nvgm, gdas, gfdl, 
+#              gefs (ncep GFS ensemble), cens (canadian 
 #              ensemble; to be added), north american ensemble - to be added)
 #  envir    -- 'prod', 'para', or 'test'
 #  SENDCOM  -- 'YES' or 'NO'
@@ -146,7 +146,6 @@ postmsg "$jlogfile" "$msg"
 #
 # For testing script interactively in non-production set following vars:
 #     gfsvitdir  - Directory for GFS Error Checked Vitals
-#     namvitdir  - Directory for Eta Error Checked Vitals
 #     gltrkdir   - Directory for output tracks
 #     homesyndir - Directory with syndir scripts/exec/fix 
 #     archsyndir - Directory with syndir scripts/exec/fix 
@@ -196,11 +195,12 @@ echo "shell is  " $shell
 
 cd $DATA
 # JY export COMGLTRK=${COMGLTRK:-${COMROOT}/gentracks/prod/gentracks}
-        export savedir=${savedir:-$COMGLTRK/${syyyy}}
+#        export savedir=${savedir:-$COMGLTRK/${syyyy}}
+export savedir=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.2025/rrfs/xxxx
 if [ ! -d ${savedir} ];   then mkdir -p ${savedir}; fi
 
 #/nwprod/util/ush/setup.sh
-. prep_step
+#. prep_step
 
 if [ ${#PDY} -eq 0 -o ${#CYL} -eq 0 -o ${#cmodel} -eq 0 ]
 then
@@ -449,8 +449,8 @@ if [ -f ${optrack}/htcard.${model}.na_${eymdh}z.out ]; then
  cat ${optrack}/htcard.${model}.na_${eymdh}z.out >> plot_na_${eymdh}z.out
 fi
    done
-if [ -f ${optrack}/htcard.nam.al_${eymdh}z.out ]; then
-cat ${optrack}/htcard.nam.al_${eymdh}z.out >> plot_na_${eymdh}z.out
+if [ -f ${optrack}/htcard.rrfs.al_${eymdh}z.out ]; then
+cat ${optrack}/htcard.rrfs.al_${eymdh}z.out >> plot_na_${eymdh}z.out
 fi
 
 sh ${USHtrkr}/tvercut_opr.sh plot_na_${eymdh}z.out
@@ -523,7 +523,7 @@ cd $TRKDATA
 >storms.anal_wemx.atcfunix.${regtype}.${eymdh}
 >storms.all_wemx.atcfunix.${regtype}.${eymdh}
 # gather current day forecast tracks and past 10 day analysis tracks:
-  for model in gfso nam ngx ukx cmc emx
+  for model in gfso rrfs ngx ukx cmc emx
    do
 if [ -f ${optrack}/trackf_${model}_${eymdh} ]; then
     cat ${optrack}/trackf_${model}_${eymdh} >> storms.all_wemx.atcfunix.${regtype}.${eymdh}

@@ -13,5 +13,5 @@ export cray_pals_ver=1.0.12
 export jasper_ver=2.0.25
 export libjpeg_ver=9c
 export grib_util_ver=1.2.3
-export wgrib2_ver=2.0.8
+export wgrib2_ver=2.0.8_wmo
 export python_ver=3.8.6
