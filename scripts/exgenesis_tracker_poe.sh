@@ -109,7 +109,7 @@ set -x
 
 ########################################
 msg="has begun for ${cmodel} at ${cyc}z"
-#postmsg "$jlogfile" "$msg"
+postmsg "$jlogfile" "$msg"
 ########################################
 
 # This script runs the hurricane tracker using operational GRIB model output.  
@@ -195,12 +195,11 @@ echo "shell is  " $shell
 
 cd $DATA
 # JY export COMGLTRK=${COMGLTRK:-${COMROOT}/gentracks/prod/gentracks}
-#        export savedir=${savedir:-$COMGLTRK/${syyyy}}
-export savedir=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.2025/rrfs/xxxx
+export savedir=${savedir:-$COMGLTRK/${syyyy}}
 if [ ! -d ${savedir} ];   then mkdir -p ${savedir}; fi
 
 #/nwprod/util/ush/setup.sh
-#. prep_step
+. prep_step
 
 if [ ${#PDY} -eq 0 -o ${#CYL} -eq 0 -o ${#cmodel} -eq 0 ]
 then
