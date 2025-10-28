@@ -3238,7 +3238,7 @@ write_vit=y
   cat ${PERTDATA}/trak.${atcfout}.atcf_gen.${regtype}.${PDY}${CYL}  >>  ${savedir}/trak.${atcfout}.atcf_gen.${regtype}.${syyyy}
 
    if [ $missing_file_cnt -gt 0 ]; then
-     echo "missing data" ${atcfout} ${PDY}${CYL} | mail -s "tracker status" hananeh.jafary@noaa.gov
+     echo "missing data" ${atcfout} ${PDY}${CYL} | mail -s "tracker status" nco.spa@noaa.gov
      echo " WARNING: Missing data $missing_file_cnt files out of $total_file_cnt files total !!!!" 
 #   else
 #      
