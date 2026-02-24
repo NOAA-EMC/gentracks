@@ -117,7 +117,7 @@ case $cmodel in
  ukmet) export COMIN=$(compath.py ${envir}/${cmodel}/${ukmet_ver}/${RUN}.$PDY)
 	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
          ;;
-  rrfs)   export COMIN=$(compath.py ${envir}/${cmodel}/${rrfs_ver}/${RUN}.$PDY)
+  rrfs)   export COMIN=$(compath.py ${envir}/${cmodel}/${rrfs_ver}/${RUN}.$PDY/$CYC)
 	  export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
          ;;
    *)   export COMIN=$(compath.py ${envir}/${NETIN}/${cmodel}_ver/${RUN}.$PDY)
