@@ -13,4 +13,4 @@ export bacio_ver=2.4.1
 
 export sp_ver=2.3.3
 export libjpeg_ver=9c
-export grib_util_ver=1.2.3
+export grib_util_ver=1.2.4

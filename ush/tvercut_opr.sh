@@ -416,7 +416,7 @@ imodel=` grep EENS ${datdir}/${outfile} | wc -l`
 if [ $imodel -ge 1 ]; then
  let nmodel=$nmodel+1 
 fi
-imodel=` grep NAM ${datdir}/${outfile} | wc -l`
+imodel=` grep RRFS ${datdir}/${outfile} | wc -l`
 if [ $imodel -ge 1 ]; then
  let nmodel=$nmodel+1 
 fi
