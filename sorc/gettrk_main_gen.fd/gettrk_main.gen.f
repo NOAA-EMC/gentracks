@@ -16,7 +16,7 @@ c   parameters are tracked in order to provide more accurate position
 c   estimates for weaker storms, which often have poorly defined
 c   structures/centers.  Currently, the system is set up to be able
 c   to process GRIB input data files from the GFS, MRF, UKMET, GDAS,
-c   ECMWF, NGM, RRFS and FNMOC/NOGAPS models.  Two 1-line files
+c   ECMWF, NGM, NAM and FNMOC/NOGAPS models.  Two 1-line files
 c   are  output from this program, both containing the forecast fix
 c   positions that the  tracker has obtained.  One of these  output 
 c   files contains the positions at every 12 hours from forecast 
@@ -48,7 +48,7 @@ c   00-11-30  Marchok - Added ability to handle GFDL and NCEP Ensemble
 c                       model data.  Extended time range to be able to
 c                       handle 5-day capability.  Forecast hours are 
 c                       now input via a namelist (easiest way to account
-c                       for RRFS, GFS and GFDL having different forecast
+c                       for NAM, GFS and GFDL having different forecast
 c                       lengths at 00/12z and 06/18z).  Model ID's are 
 c                       now input via a namelist (makes it easier, for
 c                       example, to run for many different ensemble 
@@ -108,7 +108,7 @@ c     ifhours:   Integer array holding numerical forecast times for
 c                the input model (99 = no more times available).
 c                These values are read in via a namelist.
 c     Model numbers used: (1) GFS, (2) MRF, (3) UKMET, (4) ECMWF,
-c                (5) NGM, (6) RRFS, (7) NOGAPS, (8) GDAS,
+c                (5) NGM, (6) NAM, (7) NOGAPS, (8) GDAS,
 c                (9) GFDL, (10) GFS Ensemble (11) GFS Ensemble
 c                Relocation system (12) GFS ensemble control
 c                analysis (initial time ONLY), (13) SREF Ensemble
@@ -1695,7 +1695,7 @@ c     resolution of the grib files eventually goes very low, down to
 c     say a half degree or less, in order to cover enough points in
 c     the search.
 
-      if (dell < 1.24) then      ! GFS, MRF, RRFS, NGM, NOGAPS, GDAS,
+      if (dell < 1.24) then      ! GFS, MRF, NAM, NGM, NOGAPS, GDAS,
                                  ! GFDL, NCEP Ensemble & Ensemble
                                  ! Relocation, SREF Ensemble
         ri     = ritrk_most
@@ -3133,7 +3133,7 @@ c
 c     ABSTRACT: This subroutine  outputs a 1-line message for each 
 c     storm.  This message contains the model identifier, the forecast 
 c     initial date, and the positions for 0, 12, 24, 36, 48, 60 and 72 
-c     hours.  In the case of the regional models (NGM, RRFS), which 
+c     hours.  In the case of the regional models (NGM, NAM), which 
 c     only go out to 48h, zeroes are included for forecast hours 
 c     60 and 72.
 c
@@ -3192,7 +3192,7 @@ c     from 0 - 360, increasing westward.
      &           ,intlon(13),intlat(17),intlon(17),intlat(21),intlon(21)
      &           ,0,0,storm(ist)%tcv_storm_id
 
-          case ('GFS','NGM','RRFS','GFD','AP0','AN0','AP1','AN1','AC0')
+          case ('GFS','NGM','NAM','GFD','AP0','AN0','AP1','AN1','AC0')
             write (61,81) atcfnum,atcfname
      &           ,inp%byy,inp%bmm,inp%bdd,inp%bhh,intlat(1),intlon(1)
      &           ,intlat(3),intlon(3),intlat(5),intlon(5),intlat(7)
@@ -3352,7 +3352,7 @@ c     from 0 - 360, increasing westward.
      &           ,0
      &           ,basinid,inp%byy
 
-          case ('GFS','NGM','RRFS','GFD','AP0','AN0','AP1','AN1','AC0')
+          case ('GFS','NGM','NAM','GFD','AP0','AN0','AP1','AN1','AC0')
             write (62,82) atcfnum,atcfname
      &           ,inp%byy,inp%bmm,inp%bdd,inp%bhh,intlat(3),intlon(3)
      &           ,intlat(5),intlon(5),intlat(7),intlon(7),intlat(9)
@@ -3455,7 +3455,7 @@ c     whole tracking was over to write the  output for all forecast
 c     hours, with this atcfunix format, each time we are calling this
 c     subroutine, it is to only write out 1 record, which will be the
 c     fix info for a particular storm at a given time.  Also, even 
-c     though we have some data (GFS, RRFS) at 6-hour intervals, Jim 
+c     though we have some data (GFS, NAM) at 6-hour intervals, Jim 
 c     Gross informed me that TPC does not need the positions at such
 c     frequency, and keeping the reporting at 12 hour intervals is fine.
 c
@@ -5763,7 +5763,7 @@ c
 c     ABSTRACT: This subroutine looks for the maximum near-surface wind
 c     near the storm center.  Because different fcst Centers give us 
 c     different parms, we will look at: 10m winds for GFS, MRF, GDAS, 
-c     NGM and RRFS; 10 m winds for NAVGEM; and surface winds for UKMET.
+c     NGM and NAM; 10 m winds for NAVGEM; and surface winds for UKMET.
 c     ECMWF does not send us any near-surface wind parameters.  By the
 c     way, this subroutine is only concerned with the value of the max
 c     wind, NOT where it's located radially with respect to the center.
@@ -8884,10 +8884,6 @@ c       so-called membrane MSLP, which has a GRIB2 param num of 192.
 !!        endif
 
 !!      else
-
-        if (inp%model == 6 ) then 
-          ig2_parm_num(9) = 192  ! Membrane MSLP for GFS only
-        endif
 
         if (inp%model == 1 .or. inp%model == 2 .or. 
      &      inp%model == 5 .or. inp%model == 6 .or. inp%model == 8 .or.

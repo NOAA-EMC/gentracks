@@ -33,30 +33,30 @@ cd ${PERTDATA}
 #   export namvitdir=${namvitdir:-prod/nam/v4.2}
 #   export archsyndir=${archsyndir:-prod/gfs/v16.2/syndat}
 
-export gltrkdir=${gltrkdir:-$COMGLTRK}
+   export gltrkdir=${gltrkdir:-$COMGLTRK}
 #   export gltrkdir=/meso/save/Guang.Ping.Lou/com/hur/prod/global
-export savedir=${gltrkdir}/${syyyy}
+   export savedir=${gltrkdir}/${syyyy}
 
 
 if [ ! -d ${savedir} ];   then mkdir -p ${savedir}; fi
 
-export exectrkdir=${exectrkdir:-${EXECtrkr}}
+   export exectrkdir=${exectrkdir:-${EXECtrkr}}
 
-echo " shell is  " $shell
+      echo " shell is  " $shell
 export gribver=${gribver:-2}
 
-cmodel=`echo ${cmodel} | tr "[A-Z]" "[a-z]"`
+   cmodel=`echo ${cmodel} | tr "[A-Z]" "[a-z]"`
 
-if [ ${gribver} -eq 1 ]; then
-  wgrib_parmlist=" UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 PRMSL:MSL HGT:900 HGT:850 HGT:800 HGT:750 HGT:700 HGT:650 HGT:600 HGT:550 HGT:500 HGT:450 HGT:400 HGT:350 HGT:300 "
-else
-  wgrib_parmlist=" UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 PRMSL:mean HGT:900 HGT:850 HGT:800 HGT:750 HGT:700 HGT:650 HGT:600 HGT:550 HGT:500 HGT:450 HGT:400 HGT:350 HGT:300 "
-fi
+       if [ ${gribver} -eq 1 ]; then
+wgrib_parmlist=" UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 PRMSL:MSL HGT:900 HGT:850 HGT:800 HGT:750 HGT:700 HGT:650 HGT:600 HGT:550 HGT:500 HGT:450 HGT:400 HGT:350 HGT:300 "
+       else
+wgrib_parmlist=" UGRD:850 UGRD:700 UGRD:500 VGRD:850 VGRD:700 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 PRMSL:mean HGT:900 HGT:850 HGT:800 HGT:750 HGT:700 HGT:650 HGT:600 HGT:550 HGT:500 HGT:450 HGT:400 HGT:350 HGT:300 "
+       fi
 wgrib_ec_hires_parmlist=" GH:850 GH:700 U:850 U:700 U:500 V:850 V:700 V:500 10U:sfc 10V:sfc MSL:sfc "
 wgrib_phase_parmlist="HGT:900|HGT:850|HGT:800|HGT:750|HGT:700|HGT:650|HGT:600|HGT:550|HGT:500|HGT:450|HGT:400|HGT:350|HGT:300"
 wgrib_ec_phase_parmlist=" GH:900|GH:850|GH:800|GH:750|GH:700|GH:650|GH:600|GH:550|GH:500|GH:450|GH:400|GH:350|GH:300 "
 
-export maxtime=65    # Max number of forecast time levels
+   export maxtime=65    # Max number of forecast time levels
 
 #----------------------------------------------------------------#
 #
@@ -187,20 +187,18 @@ export maxtime=65    # Max number of forecast time levels
          g2_jpdtn=0                                       ;
          model=4                                         ;;
 
-      rrfs) set +x                                         ;
-         echo " "; echo " ++ operational RRFS chosen";
+      nam) set +x                                         ;
+         echo " "; echo " ++ operational NAM chosen";
          echo " "                                         ;
          set -x                                           ;
-         rrfsdir=$COMIN                                    ;
+         namdir=$COMIN                                    ;
        if [ ${gribver} -eq 1 ]; then
-         rrfsgfile=rrfs.t${CYL}z.prslev.3km.f0
-         rrfsifile=rrfs.t${CYL}z.prslev.3km.f0
+         namgfile=nam.t${CYL}z.awip32
+         namifile=nam.t${CYL}z.awip32i 
        else
-         rrfsgfile=rrfs.t${CYL}z.prslev.3km.f0
-         rrfsifile=rrfs.t${CYL}z.prslev.3km.f0
+         namgfile=nam.t${CYL}z.awip32
+         namifile=nam.t${CYL}z.awip32i
        fi
-#       fcstlen=12                                         ;
-#       fcsthrs=' 00 06 12'                                   ;
          fcstlen=84                                       ;
          fcsthrs=' 00 06 12 18 24 30 36 42 48 54 60 66 72 78
                    84 99 99 99 99 99 99 99 99 99 99 99 99 99
@@ -208,9 +206,9 @@ export maxtime=65    # Max number of forecast time levels
                    99 99 99 99 99 99 99 99 99 99 99 99 99 99
                    99 99 99 99 99 99 99 99 99';
          atcfnum=73                                       ;
-         atcfname="rrfs "                                  ;
-         atcfout="rrfs"                                    ;
-         grmodel="rrfs"                                   ;
+         atcfname="nam "                                  ;
+         atcfout="nam"                                    ;
+         grmodel="nam"                                   ;
          atcf_vit=${atcfout}                              ;
          mslpthresh=0.0015                                ;
          v850thresh=1.5000                                ;
@@ -218,10 +216,6 @@ export maxtime=65    # Max number of forecast time levels
          export PHASE_SCHEME=cps                            ;
          modtyp='regional'                                ;
          g2_jpdtn=0                                       ;
-#        g2_mslp_parm_id=192                                 ;
-#        g1_mslp_parm_id=2                                   ;
-#         g1_sfcwind_lev_typ=105                              ;
-#         g1_sfcwind_lev_val=10                               ;  
          model=6                                         ;;
 
       nvgm) set +x                                        ;
@@ -647,7 +641,7 @@ export maxtime=65    # Max number of forecast time levels
 # UPDATE 5/12/98 MARCHOK: The script is updated so that for the
 #   global models, the gfs directory is checked for the error-
 #   checked vitals file, while for the regional models, the 
-#   rrfs directory is checked for that file.
+#   nam directory is checked for that file.
 #------------------------------------------------------------------------#
 
 # First check to see if the vitals file is in gfsvitdir or not.  If 
@@ -656,7 +650,7 @@ export maxtime=65    # Max number of forecast time levels
 # deal; this script will exit just a little further down once it
 # realizes there are not any storms to process.
 
-  if [ ${cmodel} = 'gfs' -o ${cmodel} = 'rrfs' -o ${cmodel} = 'gefs' ]; then
+  if [ ${cmodel} = 'gfs' -o ${cmodel} = 'nam' -o ${cmodel} = 'gefs' ]; then
    d6ago_ymdh=` ${NDATE} -6 ${PDY}${CYL}`
    elif [ ${cmodel} = 'sref' ]; then
    d6ago_ymdh=` ${NDATE} -9 ${PDY}${CYL}`
@@ -668,7 +662,7 @@ export maxtime=65    # Max number of forecast time levels
    d6ago_hh=`  echo ${d6ago_ymdh} | cut -c9-10`
    d6ago_str="${d6ago_ymd} ${d6ago_hh}00"
 
-  if [ ${cmodel} = 'gfs' -o ${cmodel} = 'rrfs' -o ${cmodel} = 'gefs' ]; then
+  if [ ${cmodel} = 'gfs' -o ${cmodel} = 'nam' -o ${cmodel} = 'gefs' ]; then
    d6ahead_ymdh=` ${NDATE} 6 ${PDY}${CYL}`
   elif [ ${cmodel} = 'sref' ]; then
    d6ahead_ymdh=` ${NDATE} 9 ${PDY}${CYL}`
@@ -680,21 +674,24 @@ export maxtime=65    # Max number of forecast time levels
    d6ahead_hh=`  echo ${d6ahead_ymdh} | cut -c9-10`
    d6ahead_str="${d6ahead_ymd} ${d6ahead_hh}00"
 
-  if [ ${modtyp} = 'global' ]; then
-    synvitdir=${gfsvitdir}/gfs.$PDY/${CYL}/atmos
-    synvitfile=gfs.t${CYL}z.syndata.tcvitals.tm00
-    synvit6ago_dir=${gfsvitdir}/gfs.${d6ago_4ymd}/${d6ago_hh}/atmos
-    synvit6ago_file=gfs.t${d6ago_hh}z.syndata.tcvitals.tm00
-    synvit6ahead_dir=${gfsvitdir}/gfs.${d6ahead_4ymd}/${d6ahead_hh}/atmos
-    synvit6ahead_file=gfs.t${d6ahead_hh}z.syndata.tcvitals.tm00
-  else
-    synvitdir=${rrfsvitdir}
-    synvitfile=rrfs.t${cyc}z.syndata.tcvitals.tm00
-    synvit6ago_dir=${rrfsvitdir}/rrfs.${d6ago_4ymd}
-    synvit6ago_file=rrfs.t${d6ago_hh}z.syndata.tcvitals.tm00
-    synvit6ahead_dir=${rrfsvitdir}/rrfs.${d6ahead_4ymd}
-    synvit6ahead_file=rrfs.t${d6ahead_hh}z.syndata.tcvitals.tm00
-  fi
+   if [ ${modtyp} = 'global' ]; then
+
+      synvitdir=${gfsvitdir}/gfs.$PDY/${CYL}/atmos
+      synvitfile=gfs.t${CYL}z.syndata.tcvitals.tm00
+      synvit6ago_dir=${gfsvitdir}/gfs.${d6ago_4ymd}/${d6ago_hh}/atmos
+      synvit6ago_file=gfs.t${d6ago_hh}z.syndata.tcvitals.tm00
+      synvit6ahead_dir=${gfsvitdir}/gfs.${d6ahead_4ymd}/${d6ahead_hh}/atmos
+      synvit6ahead_file=gfs.t${d6ahead_hh}z.syndata.tcvitals.tm00
+
+   else
+      synvitdir=${namvitdir}/nam.$PDY
+      synvitfile=nam.t??z.syndata.tcvitals.tm00
+      synvit6ago_dir=${namvitdir}/nam.${d6ago_4ymd}
+      synvit6ago_file=nam.t${d6ago_hh}z.syndata.tcvitals.tm00
+      synvit6ahead_dir=${namvitdir}/nam.${d6ahead_4ymd}
+      synvit6ahead_file=nam.t${d6ahead_hh}z.syndata.tcvitals.tm00
+
+   fi
 
    set +x
    echo " "
@@ -1255,177 +1252,183 @@ set -x
    regflag=`grep NHC ${PERTDATA}/vitals.upd.${atcfout}.${regtype}.${PDY}${CYL} | wc -l`
 
 # ----------------------------------
-#   Process Early RRFS, if selected
+#   Process Early NAM, if selected
 # ----------------------------------
 
-if [ ${model} -eq 6 ]; then
-    
-  grid='255 0 381 161 80000 160000 128 0000 350000  500  500 0'
+   if [ ${model} -eq 6 ]; then
+
+      grid='255 0 381 161 80000 160000 128 0000 350000  500  500 0'
 #      grid='255 0 301 141 70000 190000 128 0000 340000  500  500 0'
   grid2="0 6 0 0 0 0 0 0 381 161 0 0 80000000 160000000 48 0000000 350000000 500000 500000 0"
 
-  if [ ${regflag} -eq 0 ]; then
-    if [ ${trkrtype} = 'tracker' ]; then
-      set +x
-      echo " "
-      echo " !!! RRFS model has been selected, but there are no storms in"
-      echo " !!! the TC Vitals file that can be processed.  That is, "
-      echo " !!! there are no Vitals records from NHC.  The vitals "
-      echo " !!! records that are in the updated vitals file must be from"
-      echo " !!! another cyclone forecast center, and the Eta domain does"
-      echo " !!! not extend to any region other than that covered by NHC."
-      echo " !!! Exiting....."
-      set -x
-      err_exit " FAILED ${jobid} - ERROR IN TRACKER SCRIPT - ABNORMAL EXIT"
-      exit 1
-    fi
-  fi
-
-  if [ -s ${PERTDATA}/rrfslatlon.pgrb.${PDY}${CYL} ]; then 
-    rm ${PERTDATA}/rrfslatlon.pgrb.${PDY}${CYL}
-  fi
-
-  for fhour in ${fcsthrs}
-    do
-    if [ ${fhour} -eq 99 ]; then
-      continue
-    fi
-
-    total_file_cnt=$(($total_file_cnt+1))
-    if [ ${gribver} -eq 1 ]; then
-      if [ ! -s ${rrfsdir}/${rrfsgfile}${fhour} ]; then
-        set +x
-        echo " "
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " !!! Early RRFS File missing:                            "
-        echo " !!! ${rrfsdir}/${rrfsgfile}${fhour}                 "
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " "
-        echo " !!! Please re-run the job when the RRFS file is available ..... "
-        echo " "
-        missing_file_cnt=$(($missing_file_cnt+1))
-        set -x
-        err_exit " FAILED ${jobid} - MISSING RRFS FILE IN TRACKER SCRIPT - ABNORMAL EXIT"
+      if [ ${regflag} -eq 0 ]; then
+         if [ ${trkrtype} = 'tracker' ]; then
+            set +x
+            echo " "
+            echo " !!! NAM model has been selected, but there are no storms in"
+            echo " !!! the TC Vitals file that can be processed.  That is, "
+            echo " !!! there are no Vitals records from NHC.  The vitals "
+            echo " !!! records that are in the updated vitals file must be from"
+            echo " !!! another cyclone forecast center, and the Eta domain does"
+            echo " !!! not extend to any region other than that covered by NHC."
+            echo " !!! Exiting....."
+            set -x
+            err_exit " FAILED ${jobid} - ERROR IN TRACKER SCRIPT - ABNORMAL EXIT"
+            exit 1
+         fi
       fi
 
-      if [ -s ${rrfsdir}/${rrfsgfile}${fhour} ]; then
-        x1=${rrfsdir}/${rrfsifile}${fhour}
-      else
-        if [ -s ${PERTDATA}/tmprrfsixfile ]; then
-          rm ${PERTDATA}/tmprrfsixfile
-        fi
-          $GRBINDEX ${rrfsdir}/${rrfsgfile}${fhour} ${PERTDATA}/tmprrfsixfile
-          x1=${PERTDATA}/tmprrfsixfile
-        fi
-
-      set +x
-      echo " "
-      echo " Extracting Early RRFS GRIB data for forecast hour = $fhour"
-      echo " "
-      set -x
-  
-      g1=${rrfsdir}/${rrfsgfile}${fhour}
-
-      $COPYGB -g"$grid" -k'4*-1 33 100 850' $g1 $x1 ${PERTDATA}/rrfsllu850.grb.f${fhour};   rcc1=$?
-      $COPYGB -g"$grid" -k'4*-1 33 100 700' $g1 $x1 ${PERTDATA}/rrfsllu700.grb.f${fhour};   rcc2=$?
-      $COPYGB -g"$grid" -k'4*-1 33 100 500' $g1 $x1 ${PERTDATA}/rrfsllu500.grb.f${fhour};   rcc3=$?
-      $COPYGB -g"$grid" -k'4*-1 33 105 10'  $g1 $x1 ${PERTDATA}/rrfsllu10m.grb.f${fhour};   rcc4=$?
-      $COPYGB -g"$grid" -k'4*-1 41 100 850' $g1 $x1 ${PERTDATA}/rrfsllav850.grb.f${fhour};  rcc5=$?
-      $COPYGB -g"$grid" -k'4*-1 41 100 700' $g1 $x1 ${PERTDATA}/rrfsllav700.grb.f${fhour};  rcc6=$?
-      $COPYGB -g"$grid" -k'4*-1  7 100 850' $g1 $x1 ${PERTDATA}/rrfsllz850.grb.f${fhour};   rcc7=$?
-      $COPYGB -g"$grid" -k'4*-1  7 100 700' $g1 $x1 ${PERTDATA}/rrfsllz700.grb.f${fhour};   rcc8=$?
-      $COPYGB -g"$grid" -k'4*-1  2 102   0' $g1 $x1 ${PERTDATA}/rrfsllmslp.grb.f${fhour};   rcc9=$?
-      if [ $rcc1 -eq 134 -o $rcc2 -eq 134 -o $rcc3 -eq 134 -o $rcc4 -eq 134 -o $rcc5 -eq 134 -o \
-            $rcc6 -eq 134 -o $rcc7 -eq 134 -o $rcc8 -eq 134 -o $rcc9 -eq 134 ]
-      then
-        set +x
-        echo " "
-        echo "!!! ERROR using $COPYGB to interpolate rrfs data.  We will stop"
-        echo "!!! execution because some variables may have been copied "
-        echo "!!! okay, while some obviously have not, and that could lead"
-        echo "!!! to unreliable results from the tracker.  Check to make"
-        echo "!!! sure you've allocated enough memory for this job. "
-        echo "!!! Exiting...."
-        echo " "
-        set -x
-        err_exit " FAILED ${jobid} - ERROR INTERPOLATING RRFS PERTDATA IN TRACKER SCRIPT - ABNORMAL EXIT"
+      if [ -s ${PERTDATA}/namlatlon.pgrb.${PDY}${CYL} ]; then 
+         rm ${PERTDATA}/namlatlon.pgrb.${PDY}${CYL}
       fi
 
-      cat ${PERTDATA}/rrfsllu850.grb.f${fhour} ${PERTDATA}/rrfsllu700.grb.f${fhour} ${PERTDATA}/rrfsllu500.grb.f${fhour} ${PERTDATA}/rrfsllz850.grb.f${fhour} \
-      ${PERTDATA}/rrfsllz700.grb.f${fhour} ${PERTDATA}/rrfsllmslp.grb.f${fhour} \
-      ${PERTDATA}/rrfsllav850.grb.f${fhour} ${PERTDATA}/rrfsllav700.grb.f${fhour}  ${PERTDATA}/rrfsllu10m.grb.f${fhour} \
-        >>${PERTDATA}/rrfslatlon.pgrb.${PDY}${CYL}
- 
-
-    else ##${gribver} -eq 2
-      wgrib_parmlist="UGRD:850 VGRD:850 UGRD:700 VGRD:700 UGRD:500 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 MSLET HGT:900 HGT:850 HGT:800 HGT:750 HGT:700 HGT:650 HGT:600 HGT:550 HGT:500 HGT:450 HGT:400 HGT:350 HGT:300"
-
-      if [  -s ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2 ]
-      then
-        echo ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2
-          # Try to wgrib the primary file....
-        $WGRIB2 -s ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2 > rrfsifile.ix
-        gfile=${rrfsdir}/${rrfsgfile}${fhour}.na.grib2
-      else
-	set +x
-        echo " "
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " !!! ERROR: Both the primary and secondary global     !!!!!!!!!!!!!!"
-        echo " !!! grib version 2 files are missing for:            !!!!!!!!!!!!!!"
-        echo " !!! cmodel= ${cmodel}                                !!!!!!!!!!!!!!"
-        echo " !!! symdh=  ${symdh}                                 !!!!!!!!!!!!!!"
-        echo " !!! fhour=  ${fhour}                                 !!!!!!!!!!!!!!"
-        echo " !!! Check for the existence of these files:          !!!!!!!!!!!!!!"
-        echo " !!!    ${gfile}                                                    "
-        echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo " "
-	set -x
-        exit
-      fi
-      set +x
-      echo "Timing: fhour= $fhour before wgrib loop at `date`"
-      set -x
-
-      for parm in ${wgrib_parmlist}
+      for fhour in ${fcsthrs}
       do
-        case ${parm} in
-          "SurfaceU")
-           grep "UGRD:10 m above ground" rrfsifile.ix | \
-             $WGRIB2 -i $gfile -append -grib \
-                              ${PERTDATA}/rrfsgribfile.${PDY}${CYL}.f0${fhour} ;;
-          "SurfaceV")
-           grep "VGRD:10 m above ground" rrfsifile.ix | \
-             $WGRIB2 -i $gfile -append -grib \
-                              ${PERTDATA}/rrfsgribfile.${PDY}${CYL}.f0${fhour} ;;
-                 *)
-           grep "${parm}" rrfsifile.ix | $WGRIB2 -i $gfile -append -grib \
-                              ${PERTDATA}/rrfsgribfile.${PDY}${CYL}.f0${fhour} ;;
-        esac
-      done
 
-      set +x
-      echo "Timing: fhour= $fhour after wgrib loop at `date`"
-      set -x
+         if [ ${fhour} -eq 99 ]; then
+            continue
+         fi
 
-      gridspecs="latlon 186.0:162:0.75 0.0:120:0.75"
-      ${WGRIB2} ${PERTDATA}/rrfsgribfile.${PDY}${CYL}.f0${fhour} \
-        -set_grib_type same -set_bitmap 1 \
-        -new_grid_winds earth \
-        -new_grid $gridspecs \
-        rrfslatlon.pgrb.${PDY}${CYL}.f0${fhour}
+         total_file_cnt=$(($total_file_cnt+1))
+       if [ ${gribver} -eq 1 ]; then
+         if [ ! -s ${namdir}/${namgfile}${fhour}.tm00 ]; then
+            set +x
+            echo " "
+            echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            echo " !!! Early NAM File missing:                            "
+            echo " !!! ${namdir}/${namgfile}${fhour}.tm00                 "
+            echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            echo " "
+            echo " !!! Please re-run the job when NAM file is available ..... "
+            echo " "
+            missing_file_cnt=$(($missing_file_cnt+1))
+            set -x
+            err_exit " FAILED ${jobid} - MISSING NAM FILE IN TRACKER SCRIPT - ABNORMAL EXIT"
+         fi
 
-      cat ${PERTDATA}/rrfslatlon.pgrb.${PDY}${CYL}.f0${fhour} >> ${PERTDATA}/rrfslatlon.pgrb.${PDY}${CYL}
+         if [ -s ${namdir}/${namifile}${fhour} ]; then
+            x1=${namdir}/${namifile}${fhour}
+         else
+            if [ -s ${PERTDATA}/tmpnamixfile ]; then
+               rm ${PERTDATA}/tmpnamixfile
+            fi
+            $GRBINDEX ${namdir}/${namgfile}${fhour}.tm00 ${PERTDATA}/tmpnamixfile
+            x1=${PERTDATA}/tmpnamixfile
+         fi
 
-      $GRB2INDEX ${PERTDATA}/rrfslatlon.pgrb.${PDY}${CYL} ${PERTDATA}/rrfslatlon.pgrb.ix.${PDY}${CYL}
+         set +x
+         echo " "
+         echo " Extracting Early NAM GRIB data for forecast hour = $fhour"
+         echo " "
+         set -x
+  
+         g1=${namdir}/${namgfile}${fhour}.tm00
+     
+         $COPYGB -g"$grid" -k'4*-1 33 100 850' $g1 $x1 ${PERTDATA}/namllu850.grb.f${fhour};   rcc1=$?
+         $COPYGB -g"$grid" -k'4*-1 33 100 700' $g1 $x1 ${PERTDATA}/namllu700.grb.f${fhour};   rcc2=$?
+         $COPYGB -g"$grid" -k'4*-1 33 100 500' $g1 $x1 ${PERTDATA}/namllu500.grb.f${fhour};   rcc3=$?
+         $COPYGB -g"$grid" -k'4*-1 33 105 10'  $g1 $x1 ${PERTDATA}/namllu10m.grb.f${fhour};   rcc4=$?
+         $COPYGB -g"$grid" -k'4*-1 41 100 850' $g1 $x1 ${PERTDATA}/namllav850.grb.f${fhour};  rcc5=$?
+         $COPYGB -g"$grid" -k'4*-1 41 100 700' $g1 $x1 ${PERTDATA}/namllav700.grb.f${fhour};  rcc6=$?
+         $COPYGB -g"$grid" -k'4*-1  7 100 850' $g1 $x1 ${PERTDATA}/namllz850.grb.f${fhour};   rcc7=$?
+         $COPYGB -g"$grid" -k'4*-1  7 100 700' $g1 $x1 ${PERTDATA}/namllz700.grb.f${fhour};   rcc8=$?
+         $COPYGB -g"$grid" -k'4*-1  2 102   0' $g1 $x1 ${PERTDATA}/namllmslp.grb.f${fhour};   rcc9=$?
 
+         if [ $rcc1 -eq 134 -o $rcc2 -eq 134 -o $rcc3 -eq 134 -o $rcc4 -eq 134 -o $rcc5 -eq 134 -o \
+            $rcc6 -eq 134 -o $rcc7 -eq 134 -o $rcc8 -eq 134 -o $rcc9 -eq 134 ]
+         then
+            set +x
+            echo " "
+            echo "!!! ERROR using $COPYGB to interpolate nam data.  We will stop"
+            echo "!!! execution because some variables may have been copied "
+            echo "!!! okay, while some obviously have not, and that could lead"
+            echo "!!! to unreliable results from the tracker.  Check to make"
+            echo "!!! sure you've allocated enough memory for this job. "
+            echo "!!! Exiting...."
+            echo " "
+            set -x
+            err_exit " FAILED ${jobid} - ERROR INTERPOLATING NAM PERTDATA IN TRACKER SCRIPT - ABNORMAL EXIT"
+         fi
 
+         cat ${PERTDATA}/namllu850.grb.f${fhour} ${PERTDATA}/namllu700.grb.f${fhour} ${PERTDATA}/namllu500.grb.f${fhour} ${PERTDATA}/namllz850.grb.f${fhour} \
+        ${PERTDATA}/namllz700.grb.f${fhour} ${PERTDATA}/namllmslp.grb.f${fhour} \
+        ${PERTDATA}/namllav850.grb.f${fhour} ${PERTDATA}/namllav700.grb.f${fhour}  ${PERTDATA}/namllu10m.grb.f${fhour} \
+        >>${PERTDATA}/namlatlon.pgrb.${PDY}${CYL}
+  
+
+   else ##${gribver} -eq 2
+
+        if [  -s ${namdir}/${namgfile}${fhour}.tm00.grib2 ]
+        then
+          echo ${namdir}/${namgfile}${fhour}.tm00.grib2
+          # Try to wgrib the primary file....
+          $WGRIB2 -s ${namdir}/${namgfile}${fhour}.tm00.grib2 > namifile.ix
+          gfile=${namdir}/${namgfile}${fhour}.tm00.grib2
+        else
+            set +x
+            echo " "
+            echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            echo " !!! ERROR: Both the primary and secondary global     !!!!!!!!!!!!!!"
+            echo " !!! grib version 2 files are missing for:            !!!!!!!!!!!!!!"
+            echo " !!! cmodel= ${cmodel}                                !!!!!!!!!!!!!!"
+            echo " !!! symdh=  ${symdh}                                 !!!!!!!!!!!!!!"
+            echo " !!! fhour=  ${fhour}                                 !!!!!!!!!!!!!!"
+            echo " !!! Check for the existence of these files:          !!!!!!!!!!!!!!"
+            echo " !!!    ${gfile}                                                    "
+            echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            echo " "
+            set -x
+            exit
+        fi
+
+        set +x
+        echo "Timing: fhour= $fhour before wgrib loop at `date`"
+        set -x
+
+        for parm in ${wgrib_parmlist}
+        do
+          case ${parm} in
+            "SurfaceU")
+              grep "UGRD:10 m " namifile.ix | \
+                              $WGRIB2 -i $gfile -append -grib \
+                              ${PERTDATA}/namgribfile.${PDY}${CYL}.f${fhour} ;;
+            "SurfaceV")
+              grep "VGRD:10 m " namifile.ix | \
+                              $WGRIB2 -i $gfile -append -grib \
+                              ${PERTDATA}/namgribfile.${PDY}${CYL}.f${fhour} ;;
+                     *)
+              grep "${parm}" namifile.ix | $WGRIB2 -i $gfile -append -grib \
+                              ${PERTDATA}/namgribfile.${PDY}${CYL}.f${fhour} ;;
+          esac
+        done
+
+        set +x
+        echo "Timing: fhour= $fhour after wgrib loop at `date`"
+        set -x
+
+        nam_file=${PERTDATA}/namgribfile.${PDY}${CYL}.f${fhour}
+
+          cat ${nam_file} >> ${PERTDATA}/namgribfile.${PDY}${CYL}
+
+      fi
+  
+    done
+  
+    if [ ${gribver} -eq 1 ]; then
+      $GRBINDEX ${PERTDATA}/namlatlon.pgrb.${PDY}${CYL} ${PERTDATA}/namlatlon.pgrb.ix.${PDY}${CYL}
+    else
+      ${WGRIB2} ${PERTDATA}/namgribfile.${PDY}${CYL} \
+              -new_grid_vectors none       \
+              -new_grid latlon "140:421:0.5"  "0:180:0.5"  \
+              namlatlon.pgrb.${PDY}${CYL}
+      $GRB2INDEX ${PERTDATA}/namlatlon.pgrb.${PDY}${CYL} ${PERTDATA}/namlatlon.pgrb.ix.${PDY}${CYL}
     fi
 
-  done
+      gribfile=${PERTDATA}/namlatlon.pgrb.${PDY}${CYL}
+      ixfile=${PERTDATA}/namlatlon.pgrb.ix.${PDY}${CYL}
 
-  gribfile=${PERTDATA}/rrfslatlon.pgrb.${PDY}${CYL}
-  ixfile=${PERTDATA}/rrfslatlon.pgrb.ix.${PDY}${CYL}
-fi
+   fi
+
 # ----------------------------------
 #   Process GFDL, if selected
 # ----------------------------------
@@ -3052,7 +3055,7 @@ write_vit=y
   ln -s -f ${ixfile}                                                    fort.31
   ln -s -f ${PERTDATA}/trak.${atcfout}.radii.${regtype}.${PDY}${CYL}     fort.63
   ln -s -f ${PERTDATA}/trak.${atcfout}.atcfunix.${regtype}.${PDY}${CYL}  fort.64
-  ln -s -f ${PERTDATA}/trak.${atcfout}.atcf_gen.${regtype}.${PDY}${CYL}  fort.66
+  ln -s -f ${PERTDATA}/trak.${atcfout}.atcf_gen.${regtype}.${PDY}${CYL}     fort.66
 
   if [ ${atcfname} = 'aear' ]; then
      ln -s -f ${PERTDATA}/trak.${atcfout}.initvitl.${PDY}${CYL}          fort.65
@@ -3079,7 +3082,7 @@ write_vit=y
 #  postmsg "$jlogfile" "$msg"
   
   #LB-----------------------------------------------------------------------
-  #    The bullet proofing for rrfs and sref has been removed because the
+  #    The bullet proofing for nam and sref has been removed because the
   #    hooks in the postprocessors for each model's tracks will take the
   #    regions into account.
   #LB-----------------------------------------------------------------------
