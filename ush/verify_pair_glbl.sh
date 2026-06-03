@@ -35,7 +35,7 @@ fi
 if [ $cmodel = 'nvgm' ]; then
    cmodel=ngx
 fi
-if [ $cmodel = 'rrfs' -o $cmodel = 'gfso' -o $cmodel = 'gefs' ]; then
+if [ $cmodel = 'nam' -o $cmodel = 'gfso' -o $cmodel = 'gefs' ]; then
   hrs=" 00 06 12 18 "
   hr=6
   hr12=12
@@ -80,7 +80,7 @@ trakfile1=trak.all_${bmodel}.atcf_gen.${regtype}.${ym}
 savefile=trak.${bmodel}.atcf_gen.${regtype}.${syyyy}
 
 eemodel=`echo ${bmodel} | tr "[a-z]" "[A-Z]"`
-if [ $bmodel = 'ngx' -o $bmodel = 'ukx' -o $bmodel = 'emx' -o $bmodel = 'rrfs' -o $bmodel = 'cmc'  ]; then
+if [ $bmodel = 'ngx' -o $bmodel = 'ukx' -o $bmodel = 'emx' -o $bmodel = 'nam' -o $bmodel = 'cmc'  ]; then
 emodel=" ${eemodel}"
 zmodel="Z${eemodel}"
 else
@@ -88,7 +88,7 @@ emodel="${eemodel}"
 zmodel="Z${eemodel}"
 fi
 
-if [ $cmodel = 'rrfs' -o $cmodel = 'gfso' -o $cmodel = 'sref' ]; then
+if [ $cmodel = 'nam' -o $cmodel = 'gfso' -o $cmodel = 'sref' ]; then
   dhr=3
   fhr=3
 elif [ $cmodel = 'gefs' ]; then
