@@ -70,7 +70,7 @@ then
   export GES_IN=/nwges/${envir}
   export HISDATA=/nwges/${envir}
   export GESNDAS=/nwges/prod
-  export COMNAM=/com/nam/prod
+#  export COMNAM=/com/nam/prod
 elif [ $RUN_ENVIR = para ]
 then
   export HOMEtrkr=/nw${envir}
@@ -105,6 +105,6 @@ then
   export GES_IN=/nwges/${envir}
   export HISDATA=/nwges/${envir}
   export GESNDAS=/nwges/prod
-  export COMNAM=/com/nam/prod
+#  export COMNAM=/com/nam/prod
 fi
   export archsyndir=/com/arch/prod/syndat
