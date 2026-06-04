@@ -1,0 +1,12 @@
+**gentracks_v1.4.0**
+This update replaces the NAM model with RRFS. As part of this transition, multiple scripts have been modified.
+---------------------------------------------------------------------------------------
+
+**gentracks_v3.5.9**
+This release updates the `ush` script to accommodate changes in the ECMWF file format. Only the `ush` script has been modified in this release.
+
+----------------------------------------------------------------------------------------
+
+**gentracks_v3.5.8**
+This release prepares the package to support UKMET 0.25-degree grid data.
+
