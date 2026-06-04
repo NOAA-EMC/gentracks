@@ -264,7 +264,7 @@ sub basin_string {
 		$string = "Extratropical North America";
 		$cxml_region = "North America";
 		$cxml_track_type = "sttr";
-		$bbb = "NAM";
+		$bbb = "RRFS";
 		$bb  = "ML";
 	} elsif ($basin eq "glbl") {
 		$cxml_basin = "glob";
