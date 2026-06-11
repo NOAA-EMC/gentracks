@@ -1,4 +1,8 @@
-**gentracks_v1.4.0**
+**gentracks_v3.6.1**
+This release updates the `ush` script to accommodate RRFS new 2dfld file that includes surface U and V variables. 
+
+--------------------------------------------------------------------------------------
+**gentracks_v3.6.0**
 This update replaces the NAM model with RRFS. As part of this transition, multiple scripts have been modified.
 ---------------------------------------------------------------------------------------
 
