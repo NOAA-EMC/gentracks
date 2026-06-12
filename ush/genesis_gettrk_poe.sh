@@ -194,9 +194,11 @@ export maxtime=65    # Max number of forecast time levels
          rrfsdir=$COMIN                                    ;
        if [ ${gribver} -eq 1 ]; then
          rrfsgfile=rrfs.t${CYL}z.prslev.3km.f0
+	 rrfs_2dfl=rrfs.t${CYL}z.2dfld.3km.f0
          rrfsifile=rrfs.t${CYL}z.prslev.3km.f0
        else
          rrfsgfile=rrfs.t${CYL}z.prslev.3km.f0
+	 rrfs_2dfl=rrfs.t${CYL}z.2dfld.3km.f0
          rrfsifile=rrfs.t${CYL}z.prslev.3km.f0
        fi
 #       fcstlen=12                                         ;
@@ -1360,12 +1362,17 @@ if [ ${model} -eq 6 ]; then
     else ##${gribver} -eq 2
       wgrib_parmlist="UGRD:850 VGRD:850 UGRD:700 VGRD:700 UGRD:500 VGRD:500 SurfaceU SurfaceV ABSV:850 ABSV:700 MSLET HGT:900 HGT:850 HGT:800 HGT:750 HGT:700 HGT:650 HGT:600 HGT:550 HGT:500 HGT:450 HGT:400 HGT:350 HGT:300"
 
-      if [  -s ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2 ]
+      if [[  -s ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2 && -s ${rrfsdir}/${rrfs_2dfl}${fhour}.na.grib2 ]]
       then
         echo ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2
+	echo ${rrfsdir}/${rrfs_2dfl}${fhour}.na.grib2
           # Try to wgrib the primary file....
         $WGRIB2 -s ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2 > rrfsifile.ix
-        gfile=${rrfsdir}/${rrfsgfile}${fhour}.na.grib2
+	$WGRIB2 -s ${rrfsdir}/${rrfs_2dfl}${fhour}.na.grib2 >> rrfsifile.ix
+
+        gfile=$PERTDATA/rrfs_combined_${fhour}.na.grib2
+	cat ${rrfsdir}/${rrfsgfile}${fhour}.na.grib2 ${rrfsdir}/${rrfs_2dfl}${fhour}.na.grib2 > $gfile
+
       else
 	set +x
         echo " "
@@ -1390,15 +1397,15 @@ if [ ${model} -eq 6 ]; then
       do
         case ${parm} in
           "SurfaceU")
-           grep "UGRD:10 m above ground" rrfsifile.ix | \
-             $WGRIB2 -i $gfile -append -grib \
+#           grep "UGRD:10 m above ground" rrfsifile.ix | \
+             $WGRIB2 $gfile -match "UGRD:10 m above ground" -append -grib \
                               ${PERTDATA}/rrfsgribfile.${PDY}${CYL}.f0${fhour} ;;
           "SurfaceV")
-           grep "VGRD:10 m above ground" rrfsifile.ix | \
-             $WGRIB2 -i $gfile -append -grib \
+#           grep "VGRD:10 m above ground" rrfsifile.ix | \
+             $WGRIB2 $gfile -match "VGRD:10 m above ground" -append -grib \
                               ${PERTDATA}/rrfsgribfile.${PDY}${CYL}.f0${fhour} ;;
                  *)
-           grep "${parm}" rrfsifile.ix | $WGRIB2 -i $gfile -append -grib \
+          $WGRIB2 $gfile -match ${parm} -append -grib \
                               ${PERTDATA}/rrfsgribfile.${PDY}${CYL}.f0${fhour} ;;
         esac
       done
