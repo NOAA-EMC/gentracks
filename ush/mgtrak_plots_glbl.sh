@@ -22,7 +22,7 @@ export PS4=' + mgtrak_plots_glbl.sh line $LINENO: '
   ukmet) cmodel=ukx;;
   esac
 
-if [ $cmodel = 'nam' -o $cmodel = 'aeperts' -o $cmodel = 'gfso' -o \
+if [ $cmodel = 'rrfs' -o $cmodel = 'aeperts' -o $cmodel = 'gfso' -o \
      $cmodel = 'ukx' -o $cmodel = 'ngx' -o $cmodel = 'srperts' -o \
      $cmodel = 'emx' -o $cmodel = 'eeperts' -o $cmodel = 'cmc' -o \
      $cmodel = 'ceperts' -o $cmodel = 'anal_all' -o $cmodel = 'anal_wemx' -o \
@@ -33,7 +33,7 @@ else
   set +x
   echo " "
   echo "!!! ERROR: The model ID you entered is not currently handled by "
-  echo "!!!        this script.  Model ID must be either gfso, aeperts, nam,"
+  echo "!!!        this script.  Model ID must be either gfso, aeperts, rrfs,"
   echo "!!!        ukx, ngx, srperts, emx, eeperts, cmc or ceperts."
   echo "!!! "
   echo "!!!        You entered a model ID of --->${cmodel}<---"

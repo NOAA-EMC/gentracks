@@ -75,7 +75,7 @@ setpdy.sh
 
 # COMIN for gfs, nam and arch
 #export namvitdir=$(compath.py ${envir}/nam/${nam_ver})
-export namvitdir=${namvitdir:-$(compath.py ${envir}/nam/${nam_ver})}
+export rrfsvitdir=${namvitdir:-$(compath.py ${envir}/rrfs/${rrfs_ver})}
 #export gfsvitdir=$(compath.py ${envir}/gfs/${gfs_ver})
 export gfsvitdir=${gfsvitdir:-$(compath.py ${envir}/gfs/${gfs_ver})}
 export archsyndir=${archsyndir:-$(compath.py ${envir}/gfs/${gfs_ver}/syndat)}
@@ -117,7 +117,7 @@ case $cmodel in
  ukmet) export COMIN=$(compath.py ${envir}/${cmodel}/${ukmet_ver}/${RUN}.$PDY)
 	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
          ;;
-  nam)   export COMIN=$(compath.py ${envir}/${cmodel}/${nam_ver}/${RUN}.$PDY)
+  rrfs)   export COMIN=$(compath.py ${envir}/${cmodel}/${rrfs_ver}/${RUN}.$PDY/$CYC)
 	  export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
          ;;
    *)   export COMIN=$(compath.py ${envir}/${NETIN}/${cmodel}_ver/${RUN}.$PDY)
