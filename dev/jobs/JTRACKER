@@ -1,0 +1,217 @@
+#!/bin/sh
+
+########################################
+# TROPICAL CYCLONE TRACKER SCRIPT
+########################################
+
+date
+export PS4=' $SECONDS + JTRACKER line $LINENO: ' 
+set -x
+
+# 
+# obtain unique process id (pid) and make temp directories
+
+export pid=${pid:-$$}
+export DATA=${DATA:-${DATAROOT}/${job}.${pid}}
+mkdir -p $DATA
+
+cd $DATA
+export cycle=${cycle:-t${cyc}z}
+
+####################################
+# Specify NET Name and model
+#
+# model - model grib field to repack
+####################################
+# input model NET - NETIN
+export NETIN=${NETIN:?}
+export NET=${NET:-gentracks}
+export RUN=${RUN:?}
+
+
+####################################
+# File To Log Msgs
+####################################
+export jlogfile=${jlogfile:-${DATA}/jlogfile}
+
+####################################
+# Determine Job Output Name on System
+####################################
+export pgmout="OUTPUT.$$"
+
+export cycle=t${cyc}z 
+export CYC=$cyc
+
+####################################
+# SENDECF  - Flag Events on ECF
+# SENDCOM  - Copy Files From TMPDIR to $com
+# SENDDBN  - Send files to OSO
+####################################
+export SENDECF=${SENDECF:-YES}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+export SENDOMB=${SENDOMB:-YES}
+
+################################
+# Set up the HOME directory
+###########################
+export HOMEtracker=$HOMEgentracks
+#export HOMEtracker=${HOMEtracker:-${PACKAGEROOT}/gentracks.$gentracks_ver}
+export SCRIPTStrkr=$HOMEtracker/scripts
+export EXECtrkr=$HOMEtracker/exec
+export FIXtrkr=$HOMEtracker/fix
+export PARMtrkr=$HOMEtracker/parm
+export USHtrkr=$HOMEtracker/ush
+
+##############################
+# Run setpdy and initialize PDY variables
+##############################
+#setpdy.sh
+#. ./PDY
+export PDY=20260611
+
+###############################################
+# Define COMIN and COMOUT directory
+###############################################
+
+# COMIN for gfs, nam and arch
+#export namvitdir=$(compath.py ${envir}/nam/${nam_ver})
+#export rrfsvitdir=${namvitdir:-$(compath.py ${envir}/rrfs/${rrfs_ver})}
+export rrfsvitdir=/lfs/h1/ops/para/com/rrfs/v1.0/rrfs.${PDY}
+#export gfsvitdir=$(compath.py ${envir}/gfs/${gfs_ver})
+#export gfsvitdir=${gfsvitdir:-$(compath.py ${envir}/gfs/${gfs_ver})}
+#export archsyndir=${archsyndir:-$(compath.py ${envir}/gfs/${gfs_ver}/syndat)}
+export gfsvitdir=/lfs/h1/ops/prod/com/gfs/v16.3/gfs.${PDY}
+export archsyndir=/lfs/h1/ops/prod/com/gfs/v16.3/syndat
+
+# Input and output
+#export COMGLTRK=${COMGLTRK:-$(compath.py -o ${NET}/${gentracks_ver}/${NET})}
+export COMGLTRK=/lfs/h2/emc/ptmp/hananeh.jafary/${NET}
+
+# output
+#export tmscrdir=${tmscrdir:-$(compath.py -o ${NET}/${gentracks_ver}/arch)}
+export tmscrdir=/lfs/h2/emc/ptmp/hananeh.jafary/arch
+
+case $cmodel in
+	gefs)  export COMIN=$(compath.py ${envir}/${cmodel}/${gefs_ver}/${RUN}.$PDY/$CYC/atmos/pgrb2ap5)
+		# JY export COMOUT=$(compath.py -o ${envir}/gentracks/${gentracks_ver}/${RUN}.$PDY)
+		export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+  fens)  export COMIN=${DCOMROOT}/${PDY}/wgrbbul/fnmocens_gb2
+	  export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+ sref)  export COMIN=$(compath.py ${envir}/${cmodel}/${sref_ver}/${RUN}.$PDY/$CYC/pgrb)
+	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+  ecmwf) export COMIN=${DCOMROOT}/${PDY}/wgrbbul/${RUN}
+	  export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+  eens)  export COMIN=$(compath.py ${envir}/${NETIN}/${ens_tracker_ver}/${RUN}.$PDY)
+	  export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${cmodel}.$PDY
+         ;;
+ cens)  export COMIN=$(compath.py ${envir}/${NETIN}/${naefs_ver}/${RUN}.$PDY/$CYC/pgrb2ap5)
+	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+   cmc)  export COMIN=${DCOMROOT}/$PDY/wgrbbul/cmc_gdps_25km
+	   export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+ gfs)  export COMIN=$(compath.py ${envir}/${cmodel}/${gfs_ver}/${RUN}.$PDY/$CYC/atmos)
+	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+   nvgm) export COMIN=${DCOMROOT}/$RUN
+	   export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+ ukmet) export COMIN=$(compath.py ${envir}/${cmodel}/${ukmet_ver}/${RUN}.$PDY)
+	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+  rrfs)  # export COMIN=$(compath.py ${envir}/${cmodel}/${rrfs_ver}/${RUN}.$PDY/$CYC)
+	 # export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+	 export COMIN=/lfs/h1/ops/para/com/rrfs/v1.0/rrfs.$PDY/$CYC
+	 export COMOUT=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.$PDY
+         ;;
+   *)   export COMIN=$(compath.py ${envir}/${NETIN}/${cmodel}_ver/${RUN}.$PDY)
+	   export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+esac
+
+module list
+###########################################################
+# COMOMB for daily track file 
+# COMGLTRK for track archive file, yearly 
+###########################################################
+#export COMOMB=${COMROOT}/omb/${envir}/tracker.${PDY}
+#export COMOUT_dailyTRK=${COMOUT_dailyTRK:-$(compath.py -o ${NET}/${gentracks_ver}/${NET}.$PDY)}
+export COMOUT_dailyTRK=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.$PDY
+# For future:  export COMOMB=${COMROOT}/gentracks/${envir}/gentracks.${PDY}
+
+mkdir -p $COMOUT $COMOUT_dailyTRK $COMGLTRK $tmscrdir
+
+env
+
+######################################
+# Execute the script
+######################################
+export DO_TRACKER=${DO_TRACKER:-YES}
+
+region="1 2"
+
+export CYL=${CYL:-$cyc}
+export init_flag=no
+for reg in $region
+do
+if [ "${RUN}" = "fens" ]; then
+if [ -e ${DATA}/missing_fnmoc_files ]; then
+  rm -rf ${DATA}/missing_fnmoc_files
+fi
+elif [ "${RUN}" = "navgem" ]; then
+if [ -e ${DATA}/missing_navgem_files ]; then
+  rm -rf ${DATA}/missing_navgem_files
+fi
+
+fi
+  if [ $DO_TRACKER = YES ]
+  then
+  $HOMEtracker/scripts/exgenesis_tracker_poe.sh $PDY $CYL $cmodel $reg $init_flag
+  
+  if [ "${RUN}" = "fens" ]; then 
+    if [ -e ${DATA}/missing_fnmoc_files ]; then
+      cat ${DATA}/missing_fnmoc_files
+      echo "................................................." 					>> ${DATA}/missing_fnmoc_files
+      echo "This may be a short list of files missing for jgentracks_fens_${CYC}" 		>> ${DATA}/missing_fnmoc_files
+      echo "jgentracks_fens_${CYC} will be allowed to complete" 				>> ${DATA}/missing_fnmoc_files
+      echo "Run: ls ${COMIN}/ENSEMBLE.MET.fcst_et*${CYC} | wc -l" 				>> ${DATA}/missing_fnmoc_files
+      echo "There should be 1,365 files per cycle (00 and 12Z)" 				>> ${DATA}/missing_fnmoc_files
+      echo "Wait for files to arrive for rerun or contact Dataflow if files never arrive" 	>> ${DATA}/missing_fnmoc_files
+      cat ${DATA}/missing_fnmoc_files | mail.py -s "fnmoc outage for gentracks_fens" "nco.spa@noaa.gov" -v
+      break
+    else
+      echo "continue to next region or complete if reg=2"
+    fi
+  fi
+  if [ "${RUN}" = "navgem" ]; then
+    if [ -e ${DATA}/missing_navgem_files ]; then
+      cat ${DATA}/missing_navgem_files
+      echo "................................................."                              >> ${DATA}/missing_navgem_files
+      echo "At least 1 NAVGEM file missing for jgentracks_navgem_${CYC}" 	            >> ${DATA}/missing_navgem_files
+      echo "jgentracks_nvgm_${CYC} will be allowed to complete"                             >> ${DATA}/missing_navgem_files
+      echo "Run: ls ${COMIN}/US058GMET-OPSbd2.NAVGEM*${CYC}-NOAA* | wc -l"    		    >> ${DATA}/missing_navgem_files
+      echo "There should be 105 files per cycle (00 and 12Z)"                               >> ${DATA}/missing_navgem_files
+      echo "Wait for files to arrive for rerun or contact Dataflow if files never arrive"   >> ${DATA}/missing_navgem_files
+      cat ${DATA}/missing_navgem_files | mail.py -s "navgem outage for gentracks_navgem" "nco.spa@noaa.gov" -v
+      break
+    else
+      echo "continue to next region or complete if reg=2"
+    fi
+  fi
+  fi
+done
+
+########################################################
+
+cat $pgmout
+
+date
+if [ "$KEEPDATA" != YES ]; then
+   cd $DATAROOT
+   rm -rf $DATA
+fi
