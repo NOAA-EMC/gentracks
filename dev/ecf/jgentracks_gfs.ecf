@@ -1,19 +1,26 @@
-#PBS -N gentracks_gfs_%CYC%
+#!/bin/bash
+#PBS -N gentracks_gfs
 #PBS -j oe
 #PBS -S /bin/bash
-#PBS -q %QUEUE%
+#PBS -q dev
 #PBS -l walltime=00:40:00
-#PBS -A %PROJ%-%PROJENVIR%
+#PBS -A ENSTRACK-DEV
 #PBS -l select=1:ncpus=1:mem=4GB 
 #PBS -l debug=true
 
 model=gentracks
-%include <head.h>
-%include <envir-p1.h>
+#%include <head.h>
+#%include <envir-p1.h>
 
 ##############################
 # Load modules
 ##############################
+module reset
+#export target=wcoss2
+source /lfs/h2/emc/ens/noscrub/hananeh.jafary/gentracks.v3.6.2/versions/run.ver
+#module load ${target}.lua
+module list
+
 module load intel/$intel_ver
 module load PrgEnv-intel/$PrgEnv_intel_ver
 module load craype/$craype_ver
@@ -22,27 +29,34 @@ module load cray-pals/$cray_pals_ver
 module load libjpeg/$libjpeg_ver
 module load grib_util/$grib_util_ver
 module load wgrib2/$wgrib2_ver
+module load prod_util/2.0.13
 module list
 
 # EXPORT list here
 set -x
-export envir=%ENVIR%
+#export envir=%ENVIR%
 export cmodel=gfs
 export NETIN=gfs
 export RUN=gfs
-export cyc=%CYC%
+#export cyc=%CYC%
 
+export cyc=00
+export model=ens_tracker
+export envir=dev
+export KEEPDATA=YES
 
-${HOMEgentracks}/jobs/JTRACKER
+export DATAROOT=/lfs/h2/emc/ptmp/hananeh.jafary
+export HOMEgentracks=/lfs/h2/emc/ens/noscrub/hananeh.jafary/gentracks.v3.6.2
+${HOMEgentracks}/dev/jobs/JTRACKER
 
-if [ $? -ne 0 ]; then
-  ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
-  ecflow_client --abort
-  exit
-fi
+#if [ $? -ne 0 ]; then
+#  ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+#  ecflow_client --abort
+#  exit
+#fi
 
-%include <tail.h>
-%manual
+#%include <tail.h>
+#%manual
 ######################################################################
 PURPOSE:  To extract the storm tracks from gfs model forecasts.
 ######################################################################
