@@ -47,10 +47,10 @@ export CYC=$cyc
 # SENDCOM  - Copy Files From TMPDIR to $com
 # SENDDBN  - Send files to OSO
 ####################################
-export SENDECF=${SENDECF:-YES}
+export SENDECF=${SENDECF:-NO}
 export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-export SENDOMB=${SENDOMB:-YES}
+export SENDDBN=${SENDDBN:-NO}
+export SENDOMB=${SENDOMB:-NO}
 
 ################################
 # Set up the HOME directory
@@ -68,7 +68,7 @@ export USHtrkr=$HOMEtracker/ush
 ##############################
 #setpdy.sh
 #. ./PDY
-export PDY=20260611
+export PDY=20260629
 
 ###############################################
 # Define COMIN and COMOUT directory
@@ -77,7 +77,7 @@ export PDY=20260611
 # COMIN for gfs, nam and arch
 #export namvitdir=$(compath.py ${envir}/nam/${nam_ver})
 #export rrfsvitdir=${namvitdir:-$(compath.py ${envir}/rrfs/${rrfs_ver})}
-export rrfsvitdir=/lfs/h1/ops/para/com/rrfs/v1.0/rrfs.${PDY}
+#export rrfsvitdir=/lfs/h1/ops/para/com/rrfs/v1.0/rrfs.${PDY}
 #export gfsvitdir=$(compath.py ${envir}/gfs/${gfs_ver})
 #export gfsvitdir=${gfsvitdir:-$(compath.py ${envir}/gfs/${gfs_ver})}
 #export archsyndir=${archsyndir:-$(compath.py ${envir}/gfs/${gfs_ver}/syndat)}
@@ -88,7 +88,7 @@ export archsyndir=/lfs/h1/ops/prod/com/gfs/v16.3/syndat
 #export COMGLTRK=${COMGLTRK:-$(compath.py -o ${NET}/${gentracks_ver}/${NET})}
 export COMGLTRK=/lfs/h2/emc/ptmp/hananeh.jafary/${NET}
 
-# output
+#output
 #export tmscrdir=${tmscrdir:-$(compath.py -o ${NET}/${gentracks_ver}/arch)}
 export tmscrdir=/lfs/h2/emc/ptmp/hananeh.jafary/arch
 
@@ -113,10 +113,12 @@ case $cmodel in
 	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
          ;;
    cmc)  export COMIN=${DCOMROOT}/$PDY/wgrbbul/cmc_gdps_25km
-	   export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
-         ;;
- gfs)  export COMIN=$(compath.py ${envir}/${cmodel}/${gfs_ver}/${RUN}.$PDY/$CYC/atmos)
 	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+         ;;
+  gfs)  #export COMIN=$(compath.py ${envir}/${cmodel}/${gfs_ver}/${RUN}.$PDY/$CYC/atmos)
+       #export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+        export COMIN=/lfs/h2/emc/gfstemp/emc.global/comroot/retrov17_01_realtime/gfs.${PDY}/00/products/atmos/grib2/0p25
+        export COMOUT=/lfs/h2/emc/ptmp/hananeh.jafary/${RUN}.$PDY
          ;;
    nvgm) export COMIN=${DCOMROOT}/$RUN
 	   export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
@@ -124,10 +126,10 @@ case $cmodel in
  ukmet) export COMIN=$(compath.py ${envir}/${cmodel}/${ukmet_ver}/${RUN}.$PDY)
 	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
          ;;
-  rrfs)  # export COMIN=$(compath.py ${envir}/${cmodel}/${rrfs_ver}/${RUN}.$PDY/$CYC)
-	 # export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
-	 export COMIN=/lfs/h1/ops/para/com/rrfs/v1.0/rrfs.$PDY/$CYC
-	 export COMOUT=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.$PDY
+  rrfs)  export COMIN=$(compath.py ${envir}/${cmodel}/${rrfs_ver}/${RUN}.$PDY/$CYC)
+	 export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
+#	 export COMIN=/lfs/h1/ops/para/com/rrfs/v1.0/rrfs.$PDY/$CYC
+#	 export COMOUT=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.$PDY
          ;;
    *)   export COMIN=$(compath.py ${envir}/${NETIN}/${cmodel}_ver/${RUN}.$PDY)
 	   export COMOUT=$(compath.py -o ${NET}/${gentracks_ver})/${RUN}.$PDY
@@ -141,7 +143,8 @@ module list
 ###########################################################
 #export COMOMB=${COMROOT}/omb/${envir}/tracker.${PDY}
 #export COMOUT_dailyTRK=${COMOUT_dailyTRK:-$(compath.py -o ${NET}/${gentracks_ver}/${NET}.$PDY)}
-export COMOUT_dailyTRK=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.$PDY
+#export COMOUT_dailyTRK=/lfs/h2/emc/ptmp/hananeh.jafary/rrfs.$PDY
+export COMOUT_dailyTRK=/lfs/h1/ops/prod/com/gentracks/v3.5/gentracks.$PDY
 # For future:  export COMOMB=${COMROOT}/gentracks/${envir}/gentracks.${PDY}
 
 mkdir -p $COMOUT $COMOUT_dailyTRK $COMGLTRK $tmscrdir
