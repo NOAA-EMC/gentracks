@@ -1,3 +1,8 @@
+**gentracks_v3.6.2**
+This release prepares the package to support GFS 0.25-degree grid data.
+However, the `ush` scripts convert the high-resolution data to 1-degree resolution, which allows the package to run within the 40-minute walltime.
+
+--------------------------------------------------------------------------------------
 **gentracks_v3.6.1**
 This release updates the `ush` script to accommodate RRFS new 2dfld file that includes surface U and V variables. 
 
