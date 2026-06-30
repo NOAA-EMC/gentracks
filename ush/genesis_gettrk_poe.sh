@@ -110,8 +110,8 @@ export maxtime=65    # Max number of forecast time levels
                    99  99  99  99  99  99  99  99  99  99
                    99  99  99  99  99  99  99  99  99  99' 
        else
-         globalgfile=gfs.t${CYL}z.pgrb2.1p00.f
-         globaligfile=gfs.t${CYL}z.pgrb2.1p00.f
+         globalgfile=gfs.t${CYL}z.pres_a.0p25.f
+         globaligfile=gfs.t${CYL}z.pres_a.0p25.f
          fcsthrs=' 000 006 012 018 024 030 036 042 048 054 
                    060 066 072 078 084 090 096 102 108 114
                    120 126 132 138 144
@@ -1652,12 +1652,12 @@ then
 
       else
 
-        if [ -s ${globaldir}/${globalgfile}${fhour} ]
+        if [ -s ${globaldir}/${globalgfile}${fhour}.grib2 ]
         then
-          echo ${globaldir}/${globalgfile}${fhour}
+          echo ${globaldir}/${globalgfile}${fhour}.grib2
           # Try to wgrib the primary file....
-          $WGRIB2 -s ${globaldir}/${globalgfile}${fhour} > globalgfile.ix
-          gfile=${globaldir}/${globalgfile}${fhour}
+          $WGRIB2 -s ${globaldir}/${globalgfile}${fhour}.grib2 > globalgfile.ix
+          gfile=${globaldir}/${globalgfile}${fhour}.grib2
         else
             set +x
             echo " "
@@ -1668,7 +1668,7 @@ then
             echo " !!! symdh=  ${symdh}                                 !!!!!!!!!!!!!!"
             echo " !!! fhour=  ${fhour}                                 !!!!!!!!!!!!!!"
             echo " !!! Check for the existence of these files:          !!!!!!!!!!!!!!"
-            echo " !!!    ${globaldir}/${globalgfile}${fhour} "
+            echo " !!!    ${globaldir}/${globalgfile}${fhour}.grib2 "
             echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             echo " "
             set -x
@@ -1700,9 +1700,16 @@ then
         echo "Timing: fhour= $fhour after wgrib loop at `date`"
         set -x
 
-        global_master_file=${PERTDATA}/master.globalgribfile.${PDY}${CYL}.f${fhour}
+	${WGRIB2} ${PERTDATA}/master.globalgribfile.${PDY}${CYL}.f${fhour} \
+	  -set_grib_type same -set_bitmap 1 \
+          -new_grid_winds earth \
+	  -new_grid latlon 0:360:1.0 90:181:-1.0 \
+          gfslatlon.pgrb.${PDY}${CYL}.f0${fhour}
 
-          cat ${global_master_file} >> ${PERTDATA}/globalgribfile.${PDY}${CYL}
+
+        global_master_file=${PERTDATA}/gfslatlon.pgrb.${PDY}${CYL}.f0${fhour}
+
+        cat ${global_master_file} >> ${PERTDATA}/globalgribfile.${PDY}${CYL}
 
       fi
   
