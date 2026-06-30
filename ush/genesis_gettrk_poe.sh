@@ -1654,7 +1654,7 @@ then
 
         if [ -s ${globaldir}/${globalgfile}${fhour}.grib2 ]
         then
-          echo ${globaldir}/${globalgfile}${fhour},grib2
+          echo ${globaldir}/${globalgfile}${fhour}.grib2
           # Try to wgrib the primary file....
           $WGRIB2 -s ${globaldir}/${globalgfile}${fhour}.grib2 > globalgfile.ix
           gfile=${globaldir}/${globalgfile}${fhour}.grib2
