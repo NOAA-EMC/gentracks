@@ -40,21 +40,19 @@ echo "                              files used by going from 6-h frequency to"
 echo "                              12-h frequency from 120 - 180-h."
 echo "       May 2007 - Guang P Lou - Expanded scripts to include the following"
 echo "                    changes: "
-echo "                  1. Short range ensembles(sref) expanded to 21 from 14;  "
-echo "                     model forecast length increased from 63hrs to 87hrs      "
-echo "                  2. Canadian model is added                                 "
-echo "                  3. Canadian ensemble with 17 perturbation runs are initiated  "
-echo "                  4. ECMWF model frequency increased from 1 (00z) to 2 (00z,12z); "
+echo "                  1. Canadian model is added                                 "
+echo "                  2. Canadian ensemble with 17 perturbation runs are initiated  "
+echo "                  3. ECMWF model frequency increased from 1 (00z) to 2 (00z,12z); "
 echo "                     model length extended from 180hrs to 240hrs    "
-echo "                  5. ECMWF ensemble runs with 50 components are added; "
+echo "                  4. ECMWF ensemble runs with 50 components are added; "
 echo "                     ECMWF ensemble runs once a day only at 12z to 240hrs "
-echo "                  6. Region domain boundaries have changed for ecml and wpcg"
+echo "                  5. Region domain boundaries have changed for ecml and wpcg"
 echo "                     and domain cptg has been removed                         "
-echo "                  7. Tracks are sorted to order and to files according "
+echo "                  6. Tracks are sorted to order and to files according "
 echo "                     to region and model and saved for future usage "
-echo "                  8. All cyclones lived shorter than 24hrs are removed "
-echo "                  9. Tracks are also grouped for graphics in post processing "
-echo "                 10. The cyclone center pressure gradient is relaxed to 1hPa from 2hPa  "
+echo "                  7. All cyclones lived shorter than 24hrs are removed "
+echo "                  8. Tracks are also grouped for graphics in post processing "
+echo "                  9. The cyclone center pressure gradient is relaxed to 1hPa from 2hPa  "
 echo "  "
 echo "       Sept. 2008 - Guang Ping Lou - Expanded scripts to include the following changes: "
 echo "                  1. It uses Poe scheme to increase nodes and tasks so that "
@@ -236,16 +234,6 @@ if [ ${cmodel} = 'gefs' ]; then
 # Global ensemble
 APRUN="mpiexec --cpu-bind core --configfile" 
   pertstring=' p01 p02 p03 p04 p05 p06 p07 p08 p09 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 c00 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30'
-elif [ ${cmodel} = 'sref' ]; then
-# Short range ensemble
-   if [ ${gribver} = 1 ]; then
-APRUN="mpiexec --cpu-bind core --configfile" 
-     pertstring=' sac1 san1 sap1 san2 sap2 san3 sap3 snc1 snn1 snp1 snn2 snp2 snn3 snp3 sbc1 sbn1 sbp1 sbn2 sbp2 sbn3 sbp3'
-# new members replace old above Jan 2015:
-   else
-APRUN="mpiexec --cpu-bind core --configfile" 
-     pertstring=' sac1 san1 san2 san3 san4 san5 san6 sap1 sap2 sap3 sap4 sap5 sap6 sbc1 sbn1 sbn2 sbn3 sbn4 sbn5 sbn6 sbp1 sbp2 sbp3 sbp4 sbp5 sbp6'
-   fi
 elif [ ${cmodel} = 'eens' ]; then
 APRUN="mpiexec --cpu-bind core --configfile" 
 # ECMWF ensemble
@@ -355,7 +343,7 @@ esac
 
 if [ ${SENDCOM} = 'YES' ]; then
  if [ $regtype = "glbl" ] ; then
-  if [ ${bmodel} = 'gefs' -o ${bmodel} = 'eens' -o ${bmodel} = 'sref' -o ${bmodel} = 'cens' ]; then
+  if [ ${bmodel} = 'gefs' -o ${bmodel} = 'eens' -o ${bmodel} = 'cens' ]; then
     for pert in ${pertstring}
      do
       if [ -f ${COMOUT_dailyTRK}/${aa}${pert}.t${CYL}z.cyclone.trackatcfunix.${regtype} ]; then
@@ -401,7 +389,7 @@ cd $TRKDATA
 wait
 rm -rf poe_veri
 rm -rf poe_ens
-  if [[ ${bmodel} != 'gefs' && ${bmodel} != 'eens' && ${bmodel} != 'sref' && ${bmodel} != 'cens' && ${bmodel} != 'fens' ]]; then
+  if [[ ${bmodel} != 'gefs' && ${bmodel} != 'eens' && ${bmodel} != 'cens' && ${bmodel} != 'fens' ]]; then
 for pert in ${pertstring}
 do
    export $pert
@@ -421,26 +409,8 @@ rm plot_*.out
    sh ${USHtrkr}/verify_ver.sh $PDY$CYL ${bmodel} $regtype
 
 cd $TRKDATA
-# after the verification, do the gathering
-  if [ ${cmodel} = 'sref' ]; then
-     eymdhs=${PDY}${CYL}
-  case ${CYL} in
-    03) eymdh=${PDY}00;;
-    09) eymdh=${PDY}06;;
-    15) eymdh=${PDY}12;;
-    21) eymdh=${PDY}18;;
-  esac
-    else
-     eymdh=${PDY}${CYL}
-  case ${CYL} in
-    00) eymdhs=${PDY}03;;
-    06) eymdhs=${PDY}09;;
-    12) eymdhs=${PDY}15;;
-    18) eymdhs=${PDY}21;;
-  esac
-  fi
 
-          if (( ${CYL} == 12 | ${CYL} == 0 | ${CYL} == 15 | ${CYL} == 03 )); then
+if (( ${CYL} == 12 | ${CYL} == 0 | ${CYL} == 15 | ${CYL} == 03 )); then
 > plot_na_${eymdh}z.out
   for model in gfso ngx ukx cmc emx 
    do
@@ -532,7 +502,7 @@ fi
     cp storms.anal_wemx.atcfunix.${regtype}.${eymdh} storms.anal_all.atcfunix.${regtype}.${eymdh}
     grep -v -i emx storms.all_wemx.atcfunix.${regtype}.${eymdh} >> storms.all.atcfunix.${regtype}.${eymdh}
 
-  if [[ ${bmodel} != 'gefs' && ${bmodel} != 'eens' && ${bmodel} != 'sref' && ${bmodel} != 'cens' ]]; then
+  if [[ ${bmodel} != 'gefs' && ${bmodel} != 'eens' && ${bmodel} != 'cens' ]]; then
    grep -i ${bmodel} storms.anal_wemx.atcfunix.${regtype}.${eymdh} > storms.anal_${bmodel}.atcfunix.${regtype}.${eymdh}
    grep -i  ${bmodel} storms.all_wemx.atcfunix.${regtype}.${eymdh} > storms.${bmodel}.atcfunix.${regtype}.${eymdh}
   fi
@@ -568,9 +538,6 @@ fi
 #    grmodel=eeperts
 #  fi
 #
-#  if [ ${bmodel} = 'sref' ]; then
-#    cat ${optrack}/trackf_nam_${eymdh} > storms.srperts.atcfunix.${regtype}.${eymdhs}
-#    cat ${optrack}/bml${eymdh}.nam.*   > storms.anal_srperts.atcfunix.${regtype}.${eymdhs}
 #for pert in ${pertstring} ; do
 #    cat ${optrack}/trackf_${pert}_${eymdhs} >> storms.srperts.atcfunix.${regtype}.${eymdhs}
 #    cat ${optrack}/bml${eymdhs}.${pert}.*   >> storms.anal_eeperts.atcfunix.${regtype}.${eymdhs}

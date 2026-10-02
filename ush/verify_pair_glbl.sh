@@ -39,10 +39,6 @@ if [ $cmodel = 'rrfs' -o $cmodel = 'gfso' -o $cmodel = 'gefs' ]; then
   hrs=" 00 06 12 18 "
   hr=6
   hr12=12
-elif [ $cmodel = 'sref' ]; then
-  hrs=" 03 09 15 21 "
-  hr=6
-  hr12=12
 else
   hrs=" 00 12 "
   hr=12
@@ -88,7 +84,7 @@ emodel="${eemodel}"
 zmodel="Z${eemodel}"
 fi
 
-if [ $cmodel = 'rrfs' -o $cmodel = 'gfso' -o $cmodel = 'sref' ]; then
+if [ $cmodel = 'rrfs' -o $cmodel = 'gfso']; then
   dhr=3
   fhr=3
 elif [ $cmodel = 'gefs' ]; then

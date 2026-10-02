@@ -1,7 +1,6 @@
 export gefs_ver=v12.3
 export gfs_ver=v16.3
 export naefs_ver=v7.0
-export sref_ver=v7.1
 export ens_tracker_ver=v1.3
 export nam_ver=v4.2
 export rrfs_ver=v1.0 #LO
@@ -25,4 +24,3 @@ export g2c_ver=2.3.0
 export libjpeg_turbo_ver=2.1.0
 export wgrib2_rrfs_ver=3.8.0
 
-export COMPATH=/lfs/h1/ops/para/com/rrfs:/lfs/h1/ops/para/com/ens_tracker:/lfs/h1/ops/prod/com/gfs:/lfs/h1/ops/prod/com/gefs:/lfs/h1/ops/prod/com/sref:/lfs/h1/ops/prod/com/naefs:/lfs/h1/ops/prod/com/ukmet

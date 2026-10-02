@@ -12,18 +12,11 @@ ymdh=$1
 cmodel=$2
 regtype=$3
 
-if [ ${cmodel} = 'sref' ]; then
-   ymdh_synop=` $NDATE -3 $ymdh`
- else
-   ymdh_synop=$ymdh
-fi
+ymdh_synop=$ymdh
 
 if [ ${cmodel} = 'gefs' ]; then
 # Global ensemble
   pertstring=' ap01 ap02 ap03 ap04 ap05 ap06 ap07 ap08 ap09 ap10 ap11 ap12 ap13 ap14 ap15 ap16 ap17 ap18 ap19 ap20 ac00'
-elif [ ${cmodel} = 'sref' ]; then
-# Short range ensemble
-  pertstring=' sac1 san1 sap1 sec1 sec2 sen1 sen2 sen3 sen4 sep1 sep2 sep3 sep4 snc1 snn1 snp1 src1 srn1 srp1 srn2 srp2'
 elif [ ${cmodel} = 'eens' ]; then
 # ECMWF ensemble
   pertstring=' ep01 ep02 ep03 ep04 ep05 ep06 ep07 ep08 ep09 ep10 ep11 ep12 ep13 ep14 ep15 ep16 ep17 ep18 ep19 ep20 ep21 ep22 ep23 ep24 ep25 en01 en02 en03 en04 en05 en06 en07 en08 en09 en10 en11 en12 en13 en14 en15 en16 en17 en18 en19 en20 en21 en22 en23 en24 en25'
@@ -38,7 +31,7 @@ fi
 cp ${PARMtrkr}/htcard.modelm.al htcard.model.al
 fname=htcard.${cmodel}.al
 emodel=`echo ${cmodel} | tr "[a-z]" "[A-Z]"`
-if [ $cmodel = 'eens' -o $cmodel = 'cens' -o $cmodel = 'sref' -o $cmodel = 'gefs' ]; then
+if [ $cmodel = 'eens' -o $cmodel = 'cens' -o $cmodel = 'gefs' ]; then
 jst=1
 for pert in ${pertstring} ; do
 emodel2=`echo ${pert} | tr "[a-z]" "[A-Z]"`
@@ -88,7 +81,7 @@ cp ${optrack}/bb${ymdh}_*.${cmodel} .
 fi
 ls ab${ymdh}_*.$cmodel >ablist.${cmodel}
 
-if [ $cmodel = 'gfso' -o $cmodel = 'cens' -o $cmodel = 'sref' -o $cmodel = 'gefs' -o $cmodel = 'eens' ]; then
+if [ $cmodel = 'gfso' -o $cmodel = 'cens' -o $cmodel = 'gefs' -o $cmodel = 'eens' ]; then
 emodel=`echo ${cmodel} | tr "[a-z]" "[A-Z]"`
 sed "s/RPLC/${emodel}/" htcard.model.al |sed "s/mod1/${emodel}/" >${fname}.temp
 else
@@ -185,7 +178,7 @@ fname=htcard.${stmnm1}
       fi
     done
         let ist=ist-1
-if [ $cmodel = 'gfso' -o $cmodel = 'cens' -o $cmodel = 'sref' -o $cmodel = 'gefs' -o $cmodel = 'eens' ]; then
+if [ $cmodel = 'gfso' -o $cmodel = 'cens' -o $cmodel = 'gefs' -o $cmodel = 'eens' ]; then
 sed "s/RPLC/${emodel}/" htcard.temp >${fname}.temp
 else
 sed "s/RPLC/ ${emodel}/" htcard.temp >${fname}.temp

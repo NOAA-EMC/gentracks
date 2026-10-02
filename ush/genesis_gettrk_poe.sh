@@ -406,82 +406,6 @@ export maxtime=65    # Max number of forecast time levels
        modtyp='global'                                  ;
        model=12                                        ;;
 
-    sref) set +x                                        ;
-       echo " "; echo " ++ operational SREF ensemble member ${pert} chosen"     ;
-       echo " "                                         ;
-       set -x                                           ;
-       pert=` echo ${pert} | tr '[A-Z]' '[a-z]'`        ;
-       PERT=` echo ${pert} | tr '[a-z]' '[A-Z]'`        ;
-       srtype=` echo ${pert} | cut -c1-2`               ;
-       srpertnum=` echo ${pert} | cut -c3-4`            ;
-     if [ ${gribver} -eq 1 ]; then
-       if [ ${srtype} = 'sa' ]; then
-         # ARW members
-         if [ ${srpertnum} = 'c1' ]; then
-           srefgfile=sref_em.t${CYL}z.pgrb221.ctl.f
-         else
-           srefgfile=sref_em.t${CYL}z.pgrb221.${srpertnum}.f
-         fi
-       elif [ ${srtype} = 'sb' ]; then
-         # NMB members
-         if [ ${srpertnum} = 'c1' ]; then
-           srefgfile=sref_nmb.t${CYL}z.pgrb221.ctl.f
-         else
-           srefgfile=sref_nmb.t${CYL}z.pgrb221.${srpertnum}.f
-         fi
-       elif [ ${srtype} = 'sn' ]; then
-         # NMM members
-         if [ ${srpertnum} = 'c1' ]; then
-           srefgfile=sref_nmm.t${CYL}z.pgrb221.ctl.f
-         else
-           srefgfile=sref_nmm.t${CYL}z.pgrb221.${srpertnum}.f
-         fi
-       fi
-
-      else
-
-       if [ ${srtype} = 'sa' ]; then
-         # ARW members
-         if [ ${srpertnum} = 'c1' ]; then
-           srefgfile=sref_arw.t${CYL}z.pgrb221.ctl.f
-         else
-           srefgfile=sref_arw.t${CYL}z.pgrb221.${srpertnum}.f
-         fi
-       elif [ ${srtype} = 'sb' ]; then
-         # NMB members
-         if [ ${srpertnum} = 'c1' ]; then
-           srefgfile=sref_nmb.t${CYL}z.pgrb221.ctl.f
-         else
-           srefgfile=sref_nmb.t${CYL}z.pgrb221.${srpertnum}.f
-         fi
-       else
-         set +x
-         echo " "
-         echo "!!! ERROR: SREF MEMBER NOT RECOGNIZED. "
-         echo "!!!        USER INPUT SREF MEMBER = --->${pert}<---"
-         echo " "
-         set -x
-         err_exit " FAILED ${jobid} - ERROR INTERPOLATING SREF DATA IN TRACKER SCRIPT - ABNORMAL EXIT"
-         exit 8
-       fi
-     fi
-       srefdir=$COMIN                                   ;
-       fcstlen=84                                       ;
-       fcsthrs=' 00 06 12 18 24 30 36 42 48 54 60 66 72 78
-                 84 99 99 99 99 99 99 99 99 99 99 99 99 99
-                 99 99 99 99 99 99 99 99 99 99 99 99 99 99
-                 99 99 99 99 99 99 99 99 99 99 99 99 99 99
-                 99 99 99 99 99 99 99 99 99';
-       atcfnum=92                                       ;
-       atcfname="${pert}"                               ;
-       atcfout="${pert}"                                ;
-       atcf_vit="sbc1"                                  ;
-       modtyp='regional'                                ;
-       mslpthresh=0.0015                                ;
-       v850thresh=1.5000                                ;
-       g2_jpdtn=1                                       ;
-       model=13                                        ;;
-
   eens) set +x                                           ;
        echo " "; echo " ++ ECMWF ensemble member ${pert} chosen"     ;
        pert=` echo ${pert} | tr '[A-Z]' '[a-z]'`        ;
@@ -660,8 +584,6 @@ export maxtime=65    # Max number of forecast time levels
 
   if [ ${cmodel} = 'gfs' -o ${cmodel} = 'rrfs' -o ${cmodel} = 'gefs' ]; then
    d6ago_ymdh=` ${NDATE} -6 ${PDY}${CYL}`
-   elif [ ${cmodel} = 'sref' ]; then
-   d6ago_ymdh=` ${NDATE} -9 ${PDY}${CYL}`
    else
    d6ago_ymdh=` ${NDATE} -12 ${PDY}${CYL}`
   fi
@@ -672,8 +594,6 @@ export maxtime=65    # Max number of forecast time levels
 
   if [ ${cmodel} = 'gfs' -o ${cmodel} = 'rrfs' -o ${cmodel} = 'gefs' ]; then
    d6ahead_ymdh=` ${NDATE} 6 ${PDY}${CYL}`
-  elif [ ${cmodel} = 'sref' ]; then
-   d6ahead_ymdh=` ${NDATE} 9 ${PDY}${CYL}`
    else
    d6ahead_ymdh=` ${NDATE} 12 ${PDY}${CYL}`
   fi
@@ -709,27 +629,6 @@ export maxtime=65    # Max number of forecast time levels
 set -xa
 
    dnow_str="${symd} ${CYL}00"
-################################################
-# In order to include HPC tcvitals in SREF tracking, 
-# change timing 
-  if [ ${cmodel} = 'sref' ]; then
-   d6ago_ymdh=` ${NDATE} -9 ${PDY}${CYL}`
-   d6ago_4ymd=` echo ${d6ago_ymdh} | cut -c1-8`
-   d6ago_ymd=` echo ${d6ago_ymdh} | cut -c3-8`
-   d6ago_hh=`  echo ${d6ago_ymdh} | cut -c9-10`
-   d6ago_str="${d6ago_ymd} ${d6ago_hh}00"
-
-   d6ahead_ymdh=` ${NDATE} 3 ${PDY}${CYL}`
-   d6ahead_4ymd=` echo ${d6ahead_ymdh} | cut -c1-8`
-   d6ahead_ymd=` echo ${d6ahead_ymdh} | cut -c3-8`
-   d6ahead_hh=`  echo ${d6ahead_ymdh} | cut -c9-10`
-   d6ahead_str="${d6ahead_ymd} ${d6ahead_hh}00"
-
-   d3ago_ymdh=` ${NDATE} -3 ${PDY}${CYL}`
-   d3ago_ymd=` echo ${d3ago_ymdh} | cut -c3-8`
-   d3ago_hh=`  echo ${d3ago_ymdh} | cut -c9-10`
-   dnow_str="${d3ago_ymd} ${d3ago_hh}00"
-  fi
 ################################################
 
       grep -h "${d6ago_str}" ${synvit6ago_dir}/${synvit6ago_file}        \
@@ -824,42 +723,6 @@ set -xa
    echo "&date6aheadin  d6ahead%yy=${syyp6}, d6ahead%mm=${smmp6},"  >>${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
    echo "               d6ahead%dd=${sddp6}, d6ahead%hh=${shhp6}/"  >>${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
 
-################################################
-# In order to include HPC tcvitals in SREF tracking, 
-# change timing 
-  if [ ${cmodel} = 'sref' ]; then
-   ymdh6ago=` ${NDATE} -9 ${PDY}${CYL}`
-   syy6=`echo ${ymdh6ago} | cut -c3-4`
-   smm6=`echo ${ymdh6ago} | cut -c5-6`
-   sdd6=`echo ${ymdh6ago} | cut -c7-8`
-   shh6=`echo ${ymdh6ago} | cut -c9-10`
-   syyyy6=`echo ${ymdh6ago} | cut -c1-4`
-   symd6=${syy6}${smm6}${sdd6}
-
-   ymdh6ahead=` ${NDATE} 3 ${PDY}${CYL}`
-   syyp6=`echo ${ymdh6ahead} | cut -c3-4`
-   smmp6=`echo ${ymdh6ahead} | cut -c5-6`
-   sddp6=`echo ${ymdh6ahead} | cut -c7-8`
-   shhp6=`echo ${ymdh6ahead} | cut -c9-10`
-   syyyyp6=`echo ${ymdh6ahead} | cut -c1-4`
-   symdp6=${syyp6}${smmp6}${sddp6}
-
-   ymdh3ago=` ${NDATE} -3 ${PDY}${CYL}`
-   syy3=`echo ${ymdh3ago} | cut -c3-4`
-   smm3=`echo ${ymdh3ago} | cut -c5-6`
-   sdd3=`echo ${ymdh3ago} | cut -c7-8`
-   shh3=`echo ${ymdh3ago} | cut -c9-10`
-   syyyy3=`echo ${ymdh3ago} | cut -c1-4`
-   symd3=${syy3}${smm3}${sdd3}
-
-   echo "&datenowin   dnow%yy=${syy3}, dnow%mm=${smm3},"       >${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
-   echo "             dnow%dd=${sdd3}, dnow%hh=${shh3}/"      >>${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
-   echo "&date6agoin  d6ago%yy=${syy6}, d6ago%mm=${smm6},"  >>${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
-   echo "             d6ago%dd=${sdd6}, d6ago%hh=${shh6}/"  >>${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
-   echo "&date6aheadin  d6ahead%yy=${syyp6}, d6ahead%mm=${smmp6},"  >>${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
-   echo "               d6ahead%dd=${sddp6}, d6ahead%hh=${shhp6}/"  >>${PERTDATA}/suv_input.${atcfout}.${PDY}${CYL}
-
-  fi
 
    numvitrecs=`cat ${PERTDATA}/vitals.${atcfout}.${regtype}.${PDY}${CYL} | wc -l`
    if [ ${numvitrecs} -eq 0 ]; then
@@ -1074,40 +937,6 @@ fi
 #                   On the Fly (FOF)", we simply put those three
 #                   "FOF" characters in there.
 
-################################################
-set -xa
-#after  tcvitals, return to normal time
-  if [ ${cmodel} = 'sref' ]; then
-   d6ago_ymdh=` ${NDATE} -6 ${PDY}${CYL}`
-   d6ago_4ymd=` echo ${d6ago_ymdh} | cut -c1-8`
-   d6ago_ymd=` echo ${d6ago_ymdh} | cut -c3-8`
-   d6ago_hh=`  echo ${d6ago_ymdh} | cut -c9-10`
-   d6ago_str="${d6ago_ymd} ${d6ago_hh}00"
-
-   d6ahead_ymdh=` ${NDATE} 6 ${PDY}${CYL}`
-   d6ahead_4ymd=` echo ${d6ahead_ymdh} | cut -c1-8`
-   d6ahead_ymd=` echo ${d6ahead_ymdh} | cut -c3-8`
-   d6ahead_hh=`  echo ${d6ahead_ymdh} | cut -c9-10`
-   d6ahead_str="${d6ahead_ymd} ${d6ahead_hh}00"
-
-   dnow_str="${symd} ${CYL}00"
-
-   ymdh6ago=` ${NDATE} -6 ${PDY}${CYL}`
-   syy6=`echo ${ymdh6ago} | cut -c3-4`
-   smm6=`echo ${ymdh6ago} | cut -c5-6`
-   sdd6=`echo ${ymdh6ago} | cut -c7-8`
-   shh6=`echo ${ymdh6ago} | cut -c9-10`
-   syyyy6=`echo ${ymdh6ago} | cut -c1-4`
-   symd6=${syy6}${smm6}${sdd6}
-
-   ymdh6ahead=` ${NDATE} 6 ${PDY}${CYL}`
-   syyp6=`echo ${ymdh6ahead} | cut -c3-4`
-   smmp6=`echo ${ymdh6ahead} | cut -c5-6`
-   sddp6=`echo ${ymdh6ahead} | cut -c7-8`
-   shhp6=`echo ${ymdh6ahead} | cut -c9-10`
-   syyyyp6=`echo ${ymdh6ahead} | cut -c1-4`
-   symdp6=${syyp6}${smmp6}${sddp6}
-  fi
 ################################################
 #Because international centers make twice a day forecasts,
 #the gen_vitals exist in 12hr intervals. G.P. Lou
@@ -2509,179 +2338,6 @@ then
 
    fi
 
-# --------------------------------------------------
-#   Process SREF Ensemble perturbation, if selected
-# --------------------------------------------------
-
-   if [ ${model} -eq 13 ]; then
-
-      grid='255 0 381 161 80000 160000 128 0000 350000  500  500 0'
-      grid2="0 6 0 0 0 0 0 0 381 161 0 0 80000000 160000000 48 0000000 350000000 500000 500000 0"
-## grid 221(?)      grid='255 0 381 161 80000 160000 128 0000 350000  500  500 0'
-##      grid='255 0 301 141 70000 190000 128 0000 340000  500  500 0'
-#      grid='255 0 221 101 60000 200000 128 10000 310000  500  500 0'
-
-      if [ ${regflag} -eq 0 ]; then
-         if [ ${trkrtype} = 'tracker' ]; then
-            set +x
-            echo " "
-            echo " !!! SREF ensemble has been selected, but there are no storms"
-            echo " !!! in the TC Vitals file that can be processed.  That is, "
-            echo " !!! there are no Vitals records from NHC.  The vitals "
-            echo " !!! records that are in the updated vitals file must be from"
-            echo " !!! another cyclone forecast center, and the SREF domain "
-            echo " !!! does not extend to any region other than that covered "
-            echo " !!! by NHC.  Exiting....."
-            set -x
-            err_exit " FAILED ${jobid} - ERROR IN TRACKER SCRIPT - ABNORMAL EXIT" 
-            exit 1
-         fi
-    fi
-
-    if [ -s ${PERTDATA}/sref${pert}gribfile.${PDY}${CYL} ]; then
-       rm ${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}
-    fi
-
-    for fhour in ${fcsthrs}
-    do
-
-       if [ ${fhour} -eq 99 ]; then
-          continue
-       fi
-
-       total_file_cnt=$(($total_file_cnt+1))
-       if [ ${gribver} -eq 1 ]; then
-       if [ ! -s ${srefdir}/${srefgfile}${fhour} ]; then
-          set +x
-          echo " "
-          echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          echo " !!! SREF File missing: ${srefdir}/${srefgfile}${fhour}!"
-          echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          echo " "
-          echo " !!! Please re-run the job when SREF file is available ..... "
-          echo " "
-          missing_file_cnt=$(($missing_file_cnt+1))
-          set -x
-          err_exit " FAILED ${jobid} - MISSING SREF FILE IN TRACKER SCRIPT - ABNORMAL EXIT"
-#          continue
-       fi
-
-       if [ -s ${PERTDATA}/tmpsrefixfile ]; then rm ${PERTDATA}/tmpsrefixfile; fi
-          $GRBINDEX ${srefdir}/${srefgfile}${fhour} ${PERTDATA}/tmpsrefixfile
-          x1=${PERTDATA}/tmpsrefixfile
-
-          set +x
-          echo " "
-          echo " Extracting SREF GRIB data for pert ${pert} "
-          echo "                for forecast hour = $fhour"
-          echo " "
-          set -x
-
-          g1=${srefdir}/${srefgfile}${fhour}
-
-          $COPYGB -g"$grid" -k'4*-1 33 100 850' $g1 $x1 ${PERTDATA}/srefllu850.${pert}.grb.f${fhour};   rcc1=$?
-          $COPYGB -g"$grid" -k'4*-1 33 100 700' $g1 $x1 ${PERTDATA}/srefllu700.${pert}.grb.f${fhour};   rcc2=$?
-          $COPYGB -g"$grid" -k'4*-1 33 100 500' $g1 $x1 ${PERTDATA}/srefllu500.${pert}.grb.f${fhour};   rcc3=$?
-          $COPYGB -g"$grid" -k'4*-1 33 105 10'  $g1 $x1 ${PERTDATA}/srefllu10m.${pert}.grb.f${fhour};   rcc4=$?
-          $COPYGB -g"$grid" -k'4*-1 41 100 850' $g1 $x1 ${PERTDATA}/srefllav850.${pert}.grb.f${fhour};  rcc5=$?
-          $COPYGB -g"$grid" -k'4*-1 41 100 700' $g1 $x1 ${PERTDATA}/srefllav700.${pert}.grb.f${fhour};  rcc6=$?
-          $COPYGB -g"$grid" -k'4*-1  7 100 850' $g1 $x1 ${PERTDATA}/srefllz850.${pert}.grb.f${fhour};   rcc7=$?
-          $COPYGB -g"$grid" -k'4*-1  7 100 700' $g1 $x1 ${PERTDATA}/srefllz700.${pert}.grb.f${fhour};   rcc8=$?
-          $COPYGB -g"$grid" -k'4*-1  2 102   0' $g1 $x1 ${PERTDATA}/srefllmslp.${pert}.grb.f${fhour};   rcc9=$?
-
-          if [ $rcc1 -eq 134 -o $rcc2 -eq 134 -o $rcc3 -eq 134 -o $rcc4 -eq 134 -o $rcc5 -eq 134 -o \
-              $rcc6 -eq 134 -o $rcc7 -eq 134 -o $rcc8 -eq 134 -o $rcc9 -eq 134 ]
-          then
-             set +x
-             echo " "
-             echo "!!! ERROR using $COPYGB to interpolate sref data.  We will stop"
-             echo "!!! execution because some variables may have been copied"
-             echo "!!! okay, while some obviously have not, and that could lead"
-             echo "!!! to unreliable results from the tracker.  Check to make"
-             echo "!!! sure you've allocated enough memory for this job."
-             echo "!!! Exiting.... "
-             echo " "
-             set -x
-             err_exit " FAILED ${jobid} - ERROR INTERPOLATING SREF DATA IN TRACKER SCRIPT - ABNORMAL EXIT"
-          fi
-
-          cat ${PERTDATA}/srefllu850.${pert}.grb.f${fhour}   ${PERTDATA}/srefllu700.${pert}.grb.f${fhour} \
-          ${PERTDATA}/srefllu500.${pert}.grb.f${fhour}   ${PERTDATA}/srefllz850.${pert}.grb.f${fhour} \
-          ${PERTDATA}/srefllz700.${pert}.grb.f${fhour}   ${PERTDATA}/srefllmslp.${pert}.grb.f${fhour} \
-          ${PERTDATA}/srefllav850.${pert}.grb.f${fhour}  ${PERTDATA}/srefllav700.${pert}.grb.f${fhour} \
-          ${PERTDATA}/srefllu10m.${pert}.grb.f${fhour} \
-          >>${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}
-
-   else ##${gribver} -eq 2
-          gfile=${srefdir}/${srefgfile}${fhour}.grib2
-
-       if [ -s $gfile ]; then
-          echo $gfile
-          # Try to wgrib the primary file....
-          $WGRIB2 -s $gfile > ifile.ix
-        else
-
-          set +x
-          echo " "
-          echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          echo " !!! SREF File missing: ${srefdir}/${srefgfile}${fhour}.grib2!"
-          echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-          echo " "
-          echo " !!! Please re-run the job when SREF file is available ..... "
-          echo " "
-          missing_file_cnt=$(($missing_file_cnt+1))
-          set -x
-#          err_exit " FAILED ${jobid} - MISSING SREF FILE IN TRACKER SCRIPT - ABNORMAL EXIT"
-          continue
-       fi
-
-        for parm in ${wgrib_parmlist}
-        do
-          case ${parm} in
-            "SurfaceU")
-              grep "UGRD:10 m " ifile.ix | \
-                              $WGRIB2 -i $gfile -append -grib \
-                              ${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}.f${fhour} ;;
-            "SurfaceV")
-              grep "VGRD:10 m " ifile.ix | \
-                              $WGRIB2 -i $gfile -append -grib \
-                              ${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}.f${fhour} ;;
-                     *)
-              grep "${parm}" ifile.ix | $WGRIB2 -i $gfile -append -grib \
-                              ${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}.f${fhour} ;;
-          esac
-        done
-
-          if [ $fhour -ne 99 ]; then
-            set +x
-            echo "+++ TIMING: AFTER  SREF COPYGB for fhour= $fhour  ---> `date`"
-            set -x
-          fi
-
-        sref_file=${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}.f${fhour}
-
-          cat ${sref_file} >> ${PERTDATA}/${pert}gribfile.pgrb.${PDY}${CYL}
-
-      fi
-
-       done
-
-    if [ ${gribver} -eq 1 ]; then
-       $GRBINDEX ${PERTDATA}/sref${pert}gribfile.${PDY}${CYL} ${PERTDATA}/sref${pert}ixfile.${PDY}${CYL}
-       gribfile=${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}
-       ixfile=${PERTDATA}/sref${pert}ixfile.${PDY}${CYL}
-    else
-      ${WGRIB2} ${pert}gribfile.pgrb.${PDY}${CYL} \
-              -new_grid_vectors none       \
-              -new_grid latlon "140:421:0.5"  "0:180:0.5"  \
-              sref${pert}gribfile.${PDY}${CYL}
-       $GRB2INDEX sref${pert}gribfile.${PDY}${CYL} ${PERTDATA}/sref${pert}ixfile.${PDY}${CYL}
-       gribfile=${PERTDATA}/sref${pert}gribfile.${PDY}${CYL}
-       ixfile=${PERTDATA}/sref${pert}ixfile.${PDY}${CYL}
-    fi
-
-   fi
-
 # ------------------------------------------------------
 #   Process Canadian (CMC) hi-res deterministic, if selected
 # ------------------------------------------------------
@@ -3093,7 +2749,7 @@ write_vit=y
 #  postmsg "$jlogfile" "$msg"
   
   #LB-----------------------------------------------------------------------
-  #    The bullet proofing for rrfs and sref has been removed because the
+  #    The bullet proofing for rrfs has been removed because the
   #    hooks in the postprocessors for each model's tracks will take the
   #    regions into account.
   #LB-----------------------------------------------------------------------
@@ -3101,7 +2757,7 @@ write_vit=y
   set +x
   echo "+++ TIMING: BEFORE gettrk  ---> `date`"
   set -x
-  if [ ${cmodel} = 'gefs' -o ${cmodel} = 'sref' ]; then
+  if [ ${cmodel} = 'gefs' ]; then
      $exectrkdir/gettrk_gen <${namelist} 2>&1 >${PERTDATA}/trkr.${regtype}.${cmodel}.${pert}.out
   else
      $exectrkdir/gettrk_gen <${namelist} 2>&1 >${PERTDATA}/trkr.${regtype}.${cmodel}.out
