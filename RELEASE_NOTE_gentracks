@@ -15,8 +15,7 @@ This update reflects the discontinuation of the SREF model. As a result, the fol
 - `ush/verify_ver.sh`
 - `versions/run.ver`
 
-----------------------------------------------------------------------------------
-
+-------------------------------------------------------------------------------------
 **gentracks_v3.6.1**
 This release updates the `ush` script to accommodate RRFS new 2dfld file that includes surface U and V variables. 
 
