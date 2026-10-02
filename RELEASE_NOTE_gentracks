@@ -1,4 +1,9 @@
-**gentracks_v3.6.3**
+** gentracks_v3.6.x **
+This release prepares the package to support GFS 0.25-degree grid data.
+However, the `ush` scripts convert the high-resolution data to 1-degree resolution, which allows the package to run within the 40-minute walltime.
+
+--------------------------------------------------------------------------------------
+**gentracks_v3.6.2**
 This update reflects the discontinuation of the SREF model. As a result, the following files have been updated to remove all references to the SREF model:
 
 - `ecf/jgentracks_sref.ecf`
@@ -9,8 +14,8 @@ This update reflects the discontinuation of the SREF model. As a result, the fol
 - `ush/verify_pair_glbl.sh`
 - `ush/verify_ver.sh`
 - `versions/run.ver`
--------------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------------
 **gentracks_v3.6.1**
 This release updates the `ush` script to accommodate RRFS new 2dfld file that includes surface U and V variables. 
 
